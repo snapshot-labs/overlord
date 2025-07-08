@@ -1,0 +1,5 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getTokenDecimals should get token decimals for UNI token on Ethereum 1`] = `18`;
+
+exports[`getTokenDecimals should get token decimals for USDC token on Base 1`] = `6`;
