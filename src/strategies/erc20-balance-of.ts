@@ -10,8 +10,16 @@ interface Params {
 export default async function getValue(params: Params, network: number, snapshot: number) {
   const decimals = params.decimals ?? 18;
 
-  const tokenDecimals = await getTokenDecimals(network, params.address);
-  const price = await getTokenPriceAtTimestamp(network, params.address, snapshot);
+  if (decimals < 0 || decimals > 255 || !Number.isInteger(decimals)) return 0;
 
-  return price / Math.pow(10, tokenDecimals - decimals);
+  try {
+    const tokenDecimals = await getTokenDecimals(network, params.address);
+    const price = await getTokenPriceAtTimestamp(network, params.address, snapshot);
+
+    return price / Math.pow(10, tokenDecimals - decimals);
+  } catch (e) {
+    // console.log(e);
+
+    return 0;
+  }
 }

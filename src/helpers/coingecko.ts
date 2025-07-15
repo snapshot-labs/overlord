@@ -1,5 +1,7 @@
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
 
+const cache = new Map<string, number>();
+
 const BASE_URL = 'https://pro-api.coingecko.com/api/v3';
 
 const PLATFORM_IDS = {
@@ -223,15 +225,14 @@ function getPlatformId(network: number): string {
   return PLATFORM_IDS[network.toString()];
 }
 
-export async function getTokenPriceAtTimestamp(
-  network: number,
-  contractAddress: string,
-  ts: number
-) {
+export async function getTokenPriceAtTimestamp(network: number, address: string, ts: number) {
+  const key = `${network}:${address}:${ts}`;
+
+  if (cache.has(key)) return cache.get(key)!;
+
   const platformId = getPlatformId(network);
   const TIME_WINDOW = 1800;
-
-  const url = `${BASE_URL}/coins/${platformId}/contract/${contractAddress}/market_chart/range?${new URLSearchParams(
+  const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
     {
       vs_currency: 'usd',
       from: (ts - TIME_WINDOW).toString(),
@@ -243,13 +244,12 @@ export async function getTokenPriceAtTimestamp(
   const response = await fetch(url);
   const data: any = await response.json();
 
-  if (!data.prices?.length) {
-    return 0;
-  }
+  if (!data.prices?.length) return 0;
 
   const [, price] = data.prices.reduce((closest: any, current: any) =>
     Math.abs(current[0] - ts) < Math.abs(closest[0] - ts) ? current : closest
   );
+  cache.set(key, price);
 
   return price;
 }
