@@ -9,7 +9,7 @@ const placeholders = strategyNames.map(() => '?').join(',');
 async function processProposal(proposal) {
   const results = await getVpValueByStrategy(
     parseInt(proposal.network),
-    proposal.start,
+    proposal.created,
     proposal.strategies
   );
 
@@ -26,7 +26,7 @@ async function processProposal(proposal) {
     SET
       vp_value_by_strategy = ?,
       scores_total_value = ?,
-      cb = 1
+      cb = 3
     WHERE
       id = ?
     LIMIT
@@ -55,19 +55,17 @@ async function start() {
     .queryAsync(
       `
     SELECT
-      p.title, p.id, p.network, p.space, p.start, p.strategies, p.scores_by_strategy, p.choices
+      p.title, p.created, p.id, p.network, p.space, p.start, p.strategies, p.scores_by_strategy, p.choices
     FROM
       proposals p
     INNER JOIN
       spaces s ON p.space = s.id
     WHERE
-      p.cb = 0
-      AND p.flagged = 0
+      p.cb != 3
       AND p.type != 'weighted'
       AND p.type != 'quadratic'
       AND JSON_OVERLAPS(JSON_EXTRACT(strategies, '$[*].name'), JSON_ARRAY(${placeholders}))
       AND UNIX_TIMESTAMP() > p.start
-      AND s.deleted = 0
     ORDER BY
       p.created DESC
     LIMIT
