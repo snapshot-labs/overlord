@@ -16,8 +16,12 @@ async function processProposal(proposal) {
   const scoresByStrategy = Array.from({ length: proposal.strategies.length }, (_, i) =>
     proposal.scores_by_strategy.reduce((sum, scores) => sum + (scores[i] || 0), 0)
   );
-  const valueByStrategy = scoresByStrategy.map((score, i) => score * results[i]);
-  const totalValue = valueByStrategy.reduce((sum, value) => sum + value, 0);
+  const valueByStrategy: number[] = scoresByStrategy.map((score, i) =>
+    Number((score * results[i]).toFixed(6))
+  );
+  const totalValue: number = Number(
+    valueByStrategy.reduce((sum, value) => sum + value, 0).toFixed(3)
+  );
 
   await db.queryAsync(
     `
