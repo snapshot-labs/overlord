@@ -1,6 +1,6 @@
 // @ts-ignore
 import { describe, expect, it } from 'bun:test';
-import strategies from '../src/strategies';
+import { strategies } from '../src/strategies';
 
 describe('Strategies', () => {
   it('should export all strategies from the strategies folder', () => {
