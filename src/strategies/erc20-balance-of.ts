@@ -17,8 +17,8 @@ export default async function getValue(params: Params, network: number, snapshot
     const price = await getTokenPriceAtTimestamp(network, params.address, snapshot);
 
     return price / Math.pow(10, tokenDecimals - decimals);
-  } catch (e) {
-    // console.log(e);
+  } catch {
+    // Silently handle errors
 
     return 0;
   }
