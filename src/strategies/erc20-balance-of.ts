@@ -19,7 +19,6 @@ export default async function getValue(params: Params, network: number, snapshot
     return price / Math.pow(10, tokenDecimals - decimals);
   } catch {
     // Silently handle errors
-
     return 0;
   }
 }
