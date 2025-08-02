@@ -1,5 +1,5 @@
 import { getTokenPriceAtTimestamp } from '../helpers/coingecko';
-import { getTokenDecimals } from '../helpers/rpc';
+import { getTokenDecimals } from '../helpers/token';
 
 interface Params {
   address: string;
