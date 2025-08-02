@@ -1,0 +1,14 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`E2E API Tests should execute get_value_by_strategy with erc20-balance-of strategy 1`] = `
+[
+  17.25638653634901,
+]
+`;
+
+exports[`E2E API Tests should execute get_value_by_strategy with multiple strategies 1`] = `
+[
+  1.0032581274541421,
+  0.10032581274541422,
+]
+`;
