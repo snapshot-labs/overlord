@@ -87,7 +87,134 @@ describe('E2E API Tests', () => {
     const response = await request(app).post('/').send(payload).expect(400);
 
     expect(response.body).toMatchObject({
-      error: 'Method not found'
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'unauthorized',
+        data: 'Method not allowed'
+      },
+      id: 3
+    });
+  });
+
+  it('should return error when method is missing', async () => {
+    const payload = {
+      params: {
+        network: 1,
+        snapshot: 1640998800,
+        strategies: []
+      },
+      id: 4
+    };
+
+    const response = await request(app).post('/').send(payload).expect(400);
+
+    expect(response.body).toMatchObject({
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'unauthorized',
+        data: 'Method is required'
+      },
+      id: 4
+    });
+  });
+
+  it('should return error when params is missing', async () => {
+    const payload = {
+      method: 'get_value_by_strategy',
+      id: 5
+    };
+
+    const response = await request(app).post('/').send(payload).expect(400);
+
+    expect(response.body).toMatchObject({
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'unauthorized',
+        data: 'Params is required'
+      },
+      id: 5
+    });
+  });
+
+  it('should return error when network is missing', async () => {
+    const payload = {
+      method: 'get_value_by_strategy',
+      params: {
+        snapshot: 1640998800,
+        strategies: [
+          {
+            name: 'erc20-balance-of',
+            params: { address: '0x123' }
+          }
+        ]
+      },
+      id: 6
+    };
+
+    const response = await request(app).post('/').send(payload).expect(400);
+
+    expect(response.body).toMatchObject({
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'unauthorized',
+        data: 'Network is required'
+      },
+      id: 6
+    });
+  });
+
+  it('should return error when snapshot is missing', async () => {
+    const payload = {
+      method: 'get_value_by_strategy',
+      params: {
+        network: 1,
+        strategies: [
+          {
+            name: 'erc20-balance-of',
+            params: { address: '0x123' }
+          }
+        ]
+      },
+      id: 7
+    };
+
+    const response = await request(app).post('/').send(payload).expect(400);
+
+    expect(response.body).toMatchObject({
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'unauthorized',
+        data: 'Snapshot is required'
+      },
+      id: 7
+    });
+  });
+
+  it('should return error when strategies is missing', async () => {
+    const payload = {
+      method: 'get_value_by_strategy',
+      params: {
+        network: 1,
+        snapshot: 1640998800
+      },
+      id: 8
+    };
+
+    const response = await request(app).post('/').send(payload).expect(400);
+
+    expect(response.body).toMatchObject({
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'unauthorized',
+        data: 'Strategies is required'
+      },
+      id: 8
     });
   });
 });
