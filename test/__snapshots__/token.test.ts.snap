@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`getTokenDecimals should get token decimals for UNI token on Ethereum 1`] = `18`;
 

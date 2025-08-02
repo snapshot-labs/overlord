@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { strategies as s } from '../strategies';
 
 export async function getVpValueByStrategy(
@@ -12,4 +13,24 @@ export async function getVpValueByStrategy(
         : 0
     )
   );
+}
+
+export function rpcSuccess(res: Response, result: any, id: number) {
+  res.json({
+    jsonrpc: '2.0',
+    result,
+    id
+  });
+}
+
+export function rpcError(res: Response, code: number, e: unknown, id: number) {
+  res.status(code).json({
+    jsonrpc: '2.0',
+    error: {
+      code,
+      message: 'unauthorized',
+      data: e
+    },
+    id
+  });
 }
