@@ -7,13 +7,12 @@
   "scripts": {
     "build": "bun run tsc",
     "typescript": "bun run tsc --noEmit",
-    "lint": "bun run eslint ./src ./test ./scripts --ext .ts",
+    "lint": "bun run eslint ./src ./test --ext .ts",
     "lint:fix": "bun run lint --fix",
     "prepare": "bun run build",
     "prepublishOnly": "bun run lint",
     "test": "bun test",
-    "dev": "bun --watch src/index.ts ",
-    "sync": "bun scripts/sync.ts"
+    "dev": "bun --watch src/index.ts"
   },
   "eslintConfig": {
     "extends": "@snapshot-labs"
@@ -24,18 +23,15 @@
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/wallet": "^5.7.0",
     "@snapshot-labs/pineapple": "^0.2.0",
-    "bluebird": "^3.7.2",
     "cors": "^2.8.5",
     "cross-fetch": "^3.1.5",
     "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "mysql": "^2.18.1"
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "@snapshot-labs/eslint-config": "^0.1.0-beta.7",
     "@snapshot-labs/prettier-config": "^0.1.0-beta.7",
     "@types/express": "^5.0.3",
-    "@types/mysql": "^2.15.27",
     "@types/node": "^18.11.9",
     "eslint": "^8.28.0",
     "prettier": "^2.7.1",
