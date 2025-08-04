@@ -1,6 +1,6 @@
 import express from 'express';
 import { rpcError, rpcSuccess } from './helpers/utils';
-import getValue from './strategies';
+import getStrategiesValue from './strategies';
 
 const router = express.Router();
 
@@ -44,7 +44,7 @@ router.post('/', validateRequest, async function (req, res) {
   } = req.body;
 
   try {
-    return rpcSuccess(res, await getValue(network, snapshot, strategies), id);
+    return rpcSuccess(res, await getStrategiesValue(network, snapshot, strategies), id);
   } catch (err) {
     return rpcError(res, 500, err, id);
   }

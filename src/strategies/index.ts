@@ -2,7 +2,7 @@ import erc20BalanceOf from './erc20-balance-of';
 import multichain from './multichain';
 import uni from './uni';
 
-const STRATEGIES = {
+const strategies = {
   'erc20-balance-of': erc20BalanceOf,
   'erc20-balance-of-delegation': erc20BalanceOf,
   'erc20-balance-of-with-delegation': erc20BalanceOf,
@@ -15,15 +15,15 @@ const STRATEGIES = {
   'with-delegation': multichain
 };
 
-export default async function getValue(
+export default async function getStrategiesValue(
   network: number,
   start: number,
-  strategies: Array<{ name: string; network: string; params: any }>
+  strategiesConfig: Array<{ name: string; network: string; params: any }>
 ): Promise<number[]> {
   return await Promise.all(
-    strategies.map((strategy: any) =>
-      STRATEGIES[strategy.name]
-        ? STRATEGIES[strategy.name](strategy.params, parseInt(strategy.network) || network, start)
+    strategiesConfig.map((strategy: any) =>
+      strategies[strategy.name]
+        ? strategies[strategy.name](strategy.params, parseInt(strategy.network) || network, start)
         : 0
     )
   );

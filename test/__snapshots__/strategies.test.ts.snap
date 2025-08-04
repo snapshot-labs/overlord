@@ -1,9 +1,32 @@
-// Bun Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`Strategies should execute erc20-balance-of strategy with specific parameters 1`] = `17.25638653634901`;
+exports[`Strategies should execute erc20-balance-of strategy with specific parameters 1`] = `
+[
+  17.25638653634901,
+]
+`;
 
-exports[`Strategies should execute erc20-balance-of strategy with 6 decimals parameter on Base USDC 1`] = `1.0032581274541421`;
+exports[`Strategies should execute erc20-balance-of strategy with 6 decimals parameter on Base USDC 1`] = `
+[
+  1.0032581274541421,
+]
+`;
 
-exports[`Strategies should convert price when param decimals differ from token decimals 1`] = `0.10032581274541422`;
+exports[`Strategies should convert price when param decimals differ from token decimals 1`] = `
+[
+  0.10032581274541422,
+]
+`;
 
-exports[`Strategies should handle 0 decimals parameter correctly 1`] = `0.000001003258127454142`;
+exports[`Strategies should handle 0 decimals parameter correctly 1`] = `
+[
+  0.000001003258127454142,
+]
+`;
+
+exports[`Strategies should execute multiple strategies 1`] = `
+[
+  17.25638653634901,
+  5653986329.707215,
+]
+`;
