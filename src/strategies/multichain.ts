@@ -1,10 +1,10 @@
-import getStrategiesValue from './';
+import getStrategiesValue, { NestedStrategyParams } from './index';
 
-interface Params {
-  strategies: any[];
-}
-
-export default async function getValue(params: Params, network: number, snapshot: number) {
+export default async function getValue(
+  params: NestedStrategyParams,
+  network: number,
+  snapshot: number
+): Promise<number> {
   if (!params.strategies || !Array.isArray(params.strategies) || params.strategies.length === 0)
     return 0;
 

@@ -1,12 +1,12 @@
+import { StrategyParams } from './index';
 import { getTokenPriceAtTimestamp } from '../helpers/coingecko';
 import { getTokenDecimals } from '../helpers/token';
 
-interface Params {
-  address: string;
-  decimals?: number;
-}
-
-export default async function getValue(params: Params, network: number, snapshot: number) {
+export default async function getValue(
+  params: StrategyParams,
+  network: number,
+  snapshot: number
+): Promise<number> {
   const decimals = params.decimals ?? 18;
 
   if (decimals < 0 || decimals > 255 || !Number.isInteger(decimals)) return 0;

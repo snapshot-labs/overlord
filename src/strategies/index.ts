@@ -2,7 +2,24 @@ import erc20BalanceOf from './erc20-balance-of';
 import multichain from './multichain';
 import uni from './uni';
 
-const strategies = {
+export interface StrategyParams {
+  address: string;
+  decimals?: number;
+}
+
+export interface NestedStrategyParams {
+  strategies: StrategyConfig[];
+}
+
+export interface StrategyConfig {
+  name: string;
+  network: string;
+  params: StrategyParams | NestedStrategyParams;
+}
+
+type StrategyFunction = (params: any, network: number, snapshot: number) => Promise<number>;
+
+const strategies: Record<string, StrategyFunction> = {
   'erc20-balance-of': erc20BalanceOf,
   'erc20-balance-of-delegation': erc20BalanceOf,
   'erc20-balance-of-with-delegation': erc20BalanceOf,
@@ -18,10 +35,10 @@ const strategies = {
 export default async function getStrategiesValue(
   network: number,
   start: number,
-  strategiesConfig: Array<{ name: string; network: string; params: any }>
+  strategiesConfig: StrategyConfig[]
 ): Promise<number[]> {
   return await Promise.all(
-    strategiesConfig.map((strategy: any) =>
+    strategiesConfig.map((strategy: StrategyConfig) =>
       strategies[strategy.name]
         ? strategies[strategy.name](strategy.params, parseInt(strategy.network) || network, start)
         : 0
