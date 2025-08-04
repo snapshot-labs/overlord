@@ -1,6 +1,7 @@
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
 const TIME_WINDOW = 1800;
 const BASE_URL = 'https://pro-api.coingecko.com/api/v3';
+const CURRENCY = 'usd';
 
 const PLATFORM_IDS = {
   '1': 'ethereum',
@@ -232,7 +233,7 @@ export async function getTokenPriceAtTimestamp(network: number, address: string,
 
     const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
       {
-        vs_currency: 'usd',
+        vs_currency: CURRENCY,
         from: (ts - TIME_WINDOW).toString(),
         to: (ts + TIME_WINDOW).toString(),
         x_cg_pro_api_key: COINGECKO_API_KEY
