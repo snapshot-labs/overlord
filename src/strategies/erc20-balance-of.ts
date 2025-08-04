@@ -3,7 +3,6 @@ import { getTokenDecimals } from '../helpers/token';
 
 interface Params {
   address: string;
-  symbol?: string;
   decimals?: number;
 }
 

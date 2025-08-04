@@ -1,7 +1,6 @@
 import erc20BalanceOf from './erc20-balance-of';
 
 interface Params {
-  symbol?: string;
   decimals?: number;
 }
 
