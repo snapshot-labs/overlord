@@ -8,10 +8,10 @@ networks.
 
 ## Overview
 
-Overlord is an Express-based JSON-RPC server that fetches token unit
+Overlord is an Express-based JSON-RPC server application that fetches token unit
 prices in USD for snapshot strategies at specific block timestamps. The
 service retrieves historical token prices from CoinGecko across 200+
-blockchain networks.
+blockchain networks with robust input validation and caching.
 
 ## Features
 
@@ -22,7 +22,8 @@ blockchain networks.
   interface
 - **TypeScript**: Full TypeScript support with comprehensive type
   definitions
-- **Caching**: Built-in caching for improved performance
+- **Input Validation**: Robust input validation using Zod schemas
+- **Caching**: Built-in in-memory caching for improved performance
 - **Testing**: Comprehensive test suite with snapshot testing
 
 ## Installation
@@ -145,7 +146,7 @@ curl -X POST http://localhost:3000 \
 
 ## Supported Networks
 
-The library supports 200+ blockchain networks including:
+The server supports 200+ blockchain networks including:
 
 - **Ethereum** (1) - `ethereum`
 - **Polygon** (137) - `polygon-pos`
@@ -157,6 +158,27 @@ The library supports 200+ blockchain networks including:
 - **And many more...**
 
 See the full list in `src/helpers/coingecko.ts:PLATFORM_IDS`.
+
+## Architecture
+
+The server follows a modular architecture:
+
+1. **Express Server** (`src/index.ts`): Main entry point with CORS, JSON middleware, and route setup
+2. **JSON-RPC Router** (`src/rpc.ts`): Handles `get_value_by_strategy` method with request validation
+3. **Validation Middleware** (`src/middleware/validation.ts`): Zod-based input validation and sanitization
+4. **Strategy System** (`src/strategies/`): Pluggable pricing strategies with unified interface
+5. **CoinGecko Integration** (`src/helpers/coingecko.ts`): API client with platform ID mappings for 200+ networks
+6. **Token Helpers** (`src/helpers/token.ts`): ERC20 token utilities for decimal conversion
+7. **Cache System** (`src/helpers/cache.ts`): In-memory caching for API responses
+8. **Utilities** (`src/helpers/utils.ts`): RPC response helpers and common functions
+
+### Strategy Architecture
+
+Strategies implement the signature: `(params: any, network: number, snapshot: number) => Promise<number>`
+
+- **Core Strategy**: `erc20-balance-of` - Fetches token prices and handles decimal conversion
+- **Composite Strategies**: `multichain`, `uni` - Handle complex scenarios with multiple tokens/networks
+- **Strategy Aliases**: Multiple strategy names map to the same implementation
 
 ## Development
 
