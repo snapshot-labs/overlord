@@ -92,9 +92,7 @@ Response:
 ```json
 {
   "jsonrpc": "2.0",
-  "result": [
-    1234.56
-  ],
+  "result": [1234.56],
   "id": 1
 }
 ```
@@ -132,18 +130,18 @@ curl -X POST http://localhost:3000 \
 
 ## Supported Strategies
 
-| Strategy Name | Description |
-|---------------|-------------|
-| `erc20-balance-of` | Standard ERC20 token balance |
-| `erc20-balance-of-delegation` | ERC20 balance with delegation support |
-| `erc20-balance-of-with-delegation` | ERC20 balance with delegation |
-| `erc20-votes` | ERC20 votes implementation |
-| `erc20-votes-with-override` | ERC20 votes with override capability |
-| `comp-like-votes` | Compound-like voting mechanism |
-| `uni` | Uniswap-specific strategy |
-| `multichain` | Multi-chain aggregation strategy |
-| `delegation` | Delegation strategy |
-| `with-delegation` | Generic delegation support |
+| Strategy Name                      | Description                           |
+| ---------------------------------- | ------------------------------------- |
+| `erc20-balance-of`                 | Standard ERC20 token balance          |
+| `erc20-balance-of-delegation`      | ERC20 balance with delegation support |
+| `erc20-balance-of-with-delegation` | ERC20 balance with delegation         |
+| `erc20-votes`                      | ERC20 votes implementation            |
+| `erc20-votes-with-override`        | ERC20 votes with override capability  |
+| `comp-like-votes`                  | Compound-like voting mechanism        |
+| `uni`                              | Uniswap-specific strategy             |
+| `multichain`                       | Multi-chain aggregation strategy      |
+| `delegation`                       | Delegation strategy                   |
+| `with-delegation`                  | Generic delegation support            |
 
 ## Supported Networks
 
