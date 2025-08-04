@@ -13,7 +13,7 @@ export interface NestedStrategyParams {
 
 export interface StrategyConfig {
   name: string;
-  network: string;
+  network?: string;
   params: StrategyParams | NestedStrategyParams;
 }
 
@@ -32,17 +32,19 @@ const strategies: Record<string, StrategyFunction> = {
   'with-delegation': multichain
 };
 
-export default async function getStrategiesValue(
+export default function getStrategiesValue(
   network: number,
   start: number,
   strategiesConfig: StrategyConfig[]
 ): Promise<number[]> {
-  return await Promise.all(
-    strategiesConfig.map((strategy: StrategyConfig) => {
-      const strategyFn = strategies[strategy.name];
-      return strategyFn
-        ? strategyFn(strategy.params, parseInt(strategy.network) || network, start)
-        : 0;
-    })
+  return Promise.all(
+    strategiesConfig.map(
+      (strategy: StrategyConfig) =>
+        strategies[strategy.name]?.(
+          strategy.params,
+          strategy.network ? parseInt(strategy.network) : network,
+          start
+        ) ?? 0
+    )
   );
 }

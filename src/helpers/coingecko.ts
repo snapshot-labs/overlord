@@ -1,3 +1,5 @@
+import { withCache } from './cache';
+
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
 const TIME_WINDOW = 1800;
 const BASE_URL = 'https://pro-api.coingecko.com/api/v3';
@@ -220,12 +222,27 @@ const PLATFORM_IDS = {
   '999': 'hyperevm'
 };
 
-import { withCache } from './cache';
-
 function getPlatformId(network: number): string | undefined {
   return PLATFORM_IDS[network.toString() as keyof typeof PLATFORM_IDS];
 }
 
+/**
+ * Fetches the historical token price from CoinGecko API at a specific timestamp.
+ *
+ * @param network - The blockchain network ID
+ * @param address - The token contract address
+ * @param ts - Unix timestamp (in seconds) for the price query
+ * @returns Promise resolving to the token price in USD, or 0 if data is unavailable
+ *
+ * @remarks
+ * This function will return 0 in the following cases:
+ * - Network is not supported (no platform ID mapping)
+ * - Token address is invalid or not found
+ * - No price data available for the specified timestamp
+ * - API response contains no prices
+ *
+ * Network errors from the fetch request are not caught and will bubble up to the caller.
+ */
 export async function getTokenPriceAtTimestamp(network: number, address: string, ts: number) {
   return withCache(`price:${network}:${address}:${ts}`, async () => {
     const platformId = getPlatformId(network);

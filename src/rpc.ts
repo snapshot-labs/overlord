@@ -6,13 +6,12 @@ import getStrategiesValue from './strategies';
 const router = express.Router();
 
 router.post('/', validateRequest, async function (req, res) {
-  const {
-    params: { network, snapshot, strategies },
-    id = 0
-  } = req.body;
+  const validatedData = (req as any).validatedData!;
+  const { network, snapshot, strategies } = validatedData.params;
+  const id = validatedData.id;
 
   try {
-    return rpcSuccess(res, await getStrategiesValue(network, snapshot, strategies), id);
+    return rpcSuccess(res, await getStrategiesValue(parseInt(network), snapshot, strategies), id);
   } catch (err) {
     return rpcError(res, 500, err, id);
   }

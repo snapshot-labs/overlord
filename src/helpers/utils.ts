@@ -8,17 +8,20 @@ export function rpcSuccess(res: Response, result: any, id: number) {
   });
 }
 
+const HTTP_STATUS_MESSAGES: Record<number, string> = {
+  400: 'Bad Request',
+  500: 'Internal Server Error'
+};
+
 export function rpcError(res: Response, code: number, e: unknown, id: number) {
-  const defaultMessage = code === 500 ? 'Internal server error' : 'unauthorized';
-  const message = e instanceof Error ? e.message : typeof e === 'string' ? e : defaultMessage;
-  const data = typeof e === 'string' ? undefined : e;
+  const message = HTTP_STATUS_MESSAGES[code] || 'unauthorized';
 
   res.status(code).json({
     jsonrpc: '2.0',
     error: {
       code,
       message,
-      data
+      data: e
     },
     id
   });

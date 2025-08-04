@@ -59,7 +59,7 @@ describe('Strategies', () => {
     expect(result).toMatchSnapshot();
   });
 
-  it('should throw error for invalid address parameter', async () => {
+  it('should throw for invalid address parameter', async () => {
     await expect(
       getStrategiesValue(1, 1640998800, [
         {
@@ -74,7 +74,7 @@ describe('Strategies', () => {
     ).rejects.toThrow();
   });
 
-  it('should throw error for invalid network parameter', async () => {
+  it('should throw for invalid network parameter', async () => {
     await expect(
       getStrategiesValue(99999, 1640998800, [
         {

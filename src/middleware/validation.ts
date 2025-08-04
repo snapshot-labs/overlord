@@ -1,44 +1,55 @@
 import express from 'express';
+import { z } from 'zod';
 import { rpcError } from '../helpers/utils';
 
-function validateRequired(value: any, field: string): string | null {
-  return !value ? `${field} is required` : null;
-}
+const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 
-function validateMethod(method: string): string | null {
-  if (!method) return 'Method is required';
-  if (method !== 'get_value_by_strategy') return 'Method not allowed';
-  return null;
-}
+// Forward declaration for recursive strategy schema
+const StrategyConfigSchema: z.ZodType<any> = z.lazy(() =>
+  z.object({
+    name: z.string().min(1, 'Strategy name is required'),
+    network: z
+      .string()
+      .regex(/^\d+$/, 'Network must be a valid positive integer string')
+      .optional(),
+    params: z
+      .looseObject({
+        address: z
+          .string()
+          .regex(EVM_ADDRESS_REGEX, 'Address must be a valid EVM address')
+          .optional(),
+        decimals: z.number().int().min(0).max(255).optional(),
+        strategies: z
+          .array(StrategyConfigSchema)
+          .min(1, 'At least one strategy is required')
+          .optional()
+      })
+      .optional()
+  })
+);
 
-function validateParams(params: any): string | null {
-  if (!params) return 'Params is required';
+const RpcParamsSchema = z.object({
+  network: z.string().regex(/^\d+$/, 'Network must be a valid positive integer string'),
+  snapshot: z.number().int().positive('Snapshot must be a positive integer'),
+  strategies: z.array(StrategyConfigSchema).min(1, 'At least one strategy is required')
+});
 
-  const requiredFields = ['network', 'snapshot', 'strategies'];
-  for (const field of requiredFields) {
-    const error = validateRequired(params[field], field);
-    if (error) return error;
-  }
-
-  return null;
-}
+const RpcRequestSchema = z.object({
+  method: z.literal('get_value_by_strategy'),
+  params: RpcParamsSchema,
+  id: z.number().optional().default(0)
+});
 
 export function validateRequest(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) {
-  const { method, params, id = 0 } = req.body;
+  try {
+    (req as any).validatedData = RpcRequestSchema.parse(req.body);
 
-  const methodError = validateMethod(method);
-  if (methodError) {
-    return rpcError(res, 400, methodError, id);
+    next();
+  } catch (error) {
+    return rpcError(res, 400, error, req.body?.id ?? 0);
   }
-
-  const paramsError = validateParams(params);
-  if (paramsError) {
-    return rpcError(res, 400, paramsError, id);
-  }
-
-  next();
 }

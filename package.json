@@ -30,7 +30,8 @@
     "@ethersproject/providers": "^5.7.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "@snapshot-labs/eslint-config": "^0.1.0-beta.7",

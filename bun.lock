@@ -9,13 +9,14 @@
         "cors": "^2.8.5",
         "dotenv": "^17.2.1",
         "express": "^5.1.0",
+        "zod": "^4.0.14",
       },
       "devDependencies": {
         "@snapshot-labs/eslint-config": "^0.1.0-beta.7",
         "@snapshot-labs/prettier-config": "^0.1.0-beta.7",
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.3",
-        "@types/node": "^22.0.0",
+        "@types/node": ">=22.0.0",
         "eslint": "^8.28.0",
         "prettier": "^2.7.1",
         "supertest": "^7.1.4",
@@ -717,6 +718,8 @@
     "ws": ["ws@8.18.0", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw=="],
 
     "yocto-queue": ["yocto-queue@0.1.0", "", {}, "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="],
+
+    "zod": ["zod@4.0.14", "", {}, "sha512-nGFJTnJN6cM2v9kXL+SOBq3AtjQby3Mv5ySGFof5UGRHrRioSJ5iG680cYNjE/yWk671nROcpPj4hAS8nyLhSw=="],
 
     "@types/body-parser/@types/node": ["@types/node@18.19.115", "", { "dependencies": { "undici-types": "~5.26.4" } }, "sha512-kNrFiTgG4a9JAn1LMQeLOv3MvXIPokzXziohMrMsvpYgLpdEt/mMiVYc4sGKtDfyxM5gIDF4VgrPRyCw4fHOYg=="],
 
