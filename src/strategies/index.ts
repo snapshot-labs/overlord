@@ -38,10 +38,11 @@ export default async function getStrategiesValue(
   strategiesConfig: StrategyConfig[]
 ): Promise<number[]> {
   return await Promise.all(
-    strategiesConfig.map((strategy: StrategyConfig) =>
-      strategies[strategy.name]
-        ? strategies[strategy.name](strategy.params, parseInt(strategy.network) || network, start)
-        : 0
-    )
+    strategiesConfig.map((strategy: StrategyConfig) => {
+      const strategyFn = strategies[strategy.name];
+      return strategyFn
+        ? strategyFn(strategy.params, parseInt(strategy.network) || network, start)
+        : 0;
+    })
   );
 }

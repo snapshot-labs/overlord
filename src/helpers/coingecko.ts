@@ -221,8 +221,8 @@ const PLATFORM_IDS = {
 
 const cache = new Map<string, number>();
 
-function getPlatformId(network: number): string {
-  return PLATFORM_IDS[network.toString()];
+function getPlatformId(network: number): string | undefined {
+  return PLATFORM_IDS[network.toString() as keyof typeof PLATFORM_IDS];
 }
 
 export async function getTokenPriceAtTimestamp(network: number, address: string, ts: number) {
@@ -231,6 +231,8 @@ export async function getTokenPriceAtTimestamp(network: number, address: string,
   if (cache.has(key)) return cache.get(key)!;
 
   const platformId = getPlatformId(network);
+  if (!platformId) return 0;
+
   const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
     {
       vs_currency: 'usd',
