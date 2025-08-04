@@ -184,7 +184,7 @@ Strategies implement the signature: `(params: any, network: number, snapshot: nu
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) (recommended) or Node.js 18+
+- [Bun](https://bun.sh) (recommended) or Node.js 22+
 - CoinGecko Pro API key
 
 ### Scripts
