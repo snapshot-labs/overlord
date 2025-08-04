@@ -1,7 +1,5 @@
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
-
-const cache = new Map<string, number>();
-
+const TIME_WINDOW = 1800;
 const BASE_URL = 'https://pro-api.coingecko.com/api/v3';
 
 const PLATFORM_IDS = {
@@ -221,6 +219,8 @@ const PLATFORM_IDS = {
   '999': 'hyperevm'
 };
 
+const cache = new Map<string, number>();
+
 function getPlatformId(network: number): string {
   return PLATFORM_IDS[network.toString()];
 }
@@ -231,7 +231,6 @@ export async function getTokenPriceAtTimestamp(network: number, address: string,
   if (cache.has(key)) return cache.get(key)!;
 
   const platformId = getPlatformId(network);
-  const TIME_WINDOW = 1800;
   const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
     {
       vs_currency: 'usd',
