@@ -4,7 +4,6 @@ import { rpcError } from '../helpers/utils';
 
 const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 
-// Forward declaration for recursive strategy schema
 const StrategyConfigSchema: z.ZodType<any> = z.lazy(() =>
   z.object({
     name: z.string().min(1, 'Strategy name is required'),
