@@ -5,16 +5,18 @@ import uni from './uni';
 export interface StrategyParams {
   address: string;
   decimals?: number;
+  [key: string]: any;
 }
 
 export interface NestedStrategyParams {
   strategies: StrategyConfig[];
+  [key: string]: any;
 }
 
 export interface StrategyConfig {
   name: string;
   network?: string;
-  params: StrategyParams | NestedStrategyParams;
+  params?: StrategyParams | NestedStrategyParams | { [key: string]: any };
 }
 
 type StrategyFunction = (params: any, network: number, snapshot: number) => Promise<number>;
