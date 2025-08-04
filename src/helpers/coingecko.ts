@@ -219,38 +219,35 @@ const PLATFORM_IDS = {
   '999': 'hyperevm'
 };
 
-const cache = new Map<string, number>();
+import { withCache } from './cache';
 
 function getPlatformId(network: number): string | undefined {
   return PLATFORM_IDS[network.toString() as keyof typeof PLATFORM_IDS];
 }
 
 export async function getTokenPriceAtTimestamp(network: number, address: string, ts: number) {
-  const key = `${network}:${address}:${ts}`;
+  return withCache(`price:${network}:${address}:${ts}`, async () => {
+    const platformId = getPlatformId(network);
+    if (!platformId) return 0;
 
-  if (cache.has(key)) return cache.get(key)!;
+    const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
+      {
+        vs_currency: 'usd',
+        from: (ts - TIME_WINDOW).toString(),
+        to: (ts + TIME_WINDOW).toString(),
+        x_cg_pro_api_key: COINGECKO_API_KEY
+      }
+    )}`;
 
-  const platformId = getPlatformId(network);
-  if (!platformId) return 0;
+    const response = await fetch(url);
+    const data: any = await response.json();
 
-  const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
-    {
-      vs_currency: 'usd',
-      from: (ts - TIME_WINDOW).toString(),
-      to: (ts + TIME_WINDOW).toString(),
-      x_cg_pro_api_key: COINGECKO_API_KEY
-    }
-  )}`;
+    if (!data.prices?.length) return 0;
 
-  const response = await fetch(url);
-  const data: any = await response.json();
+    const [, price] = data.prices.reduce((closest: any, current: any) =>
+      Math.abs(current[0] - ts) < Math.abs(closest[0] - ts) ? current : closest
+    );
 
-  if (!data.prices?.length) return 0;
-
-  const [, price] = data.prices.reduce((closest: any, current: any) =>
-    Math.abs(current[0] - ts) < Math.abs(closest[0] - ts) ? current : closest
-  );
-  cache.set(key, price);
-
-  return price;
+    return price;
+  });
 }
