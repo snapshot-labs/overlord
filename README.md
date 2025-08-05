@@ -164,13 +164,14 @@ See the full list in `src/helpers/coingecko.ts:PLATFORM_IDS`.
 The server follows a modular architecture:
 
 1. **Express Server** (`src/index.ts`): Main entry point with CORS, JSON middleware, and route setup
-2. **JSON-RPC Router** (`src/rpc.ts`): Handles `get_value_by_strategy` method with request validation
-3. **Validation Middleware** (`src/middleware/validation.ts`): Zod-based input validation and sanitization
+2. **JSON-RPC Router** (`src/rpc.ts`): Handles `get_value_by_strategy` method with async error handling
+3. **Middleware System**:
+   - **Validation** (`src/middleware/validation.ts`): Zod-based input validation and sanitization
+   - **Error Handler** (`src/middleware/errorHandler.ts`): Centralized error handling for consistent JSON-RPC responses
 4. **Strategy System** (`src/strategies/`): Pluggable pricing strategies with unified interface
 5. **CoinGecko Integration** (`src/helpers/coingecko.ts`): API client with platform ID mappings for 200+ networks
 6. **Token Helpers** (`src/helpers/token.ts`): ERC20 token utilities for decimal conversion
 7. **Cache System** (`src/helpers/cache.ts`): In-memory caching for API responses
-8. **Utilities** (`src/helpers/utils.ts`): RPC response helpers and common functions
 
 ### Strategy Architecture
 
@@ -255,7 +256,9 @@ token
 
 ## Error Handling
 
-The API returns standardized JSON-RPC 2.0 error responses. For validation errors, the `data` field contains an array of specific field errors:
+The server uses centralized error handling middleware that automatically catches and formats errors into standardized JSON-RPC 2.0 responses. All errors are processed through a single error handler that distinguishes between validation errors (400) and internal server errors (500).
+
+For validation errors, the `data` field contains an array of specific field errors:
 
 ```json
 {

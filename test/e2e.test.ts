@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 import express, { Express } from 'express';
 import request from 'supertest';
+import { errorHandler } from '../src/middleware/errorHandler';
 import rpcRouter from '../src/rpc';
 
 describe('E2E API Tests', () => {
@@ -14,6 +15,9 @@ describe('E2E API Tests', () => {
 
     // Mount the RPC router
     app.use('/', rpcRouter);
+
+    // Add error handler middleware
+    app.use(errorHandler);
   });
 
   it('should execute get_value_by_strategy with erc20-balance-of strategy', async () => {

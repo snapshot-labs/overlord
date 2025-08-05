@@ -1,6 +1,5 @@
 import express from 'express';
 import { z } from 'zod';
-import { rpcError } from '../helpers/utils';
 
 const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 
@@ -46,9 +45,8 @@ export function validateRequest(
 ) {
   try {
     (req as any).validatedData = RpcRequestSchema.parse(req.body);
-
     next();
   } catch (error) {
-    return rpcError(res, 400, error, req.body?.id ?? 0);
+    next(error);
   }
 }

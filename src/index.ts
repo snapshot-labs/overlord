@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import { errorHandler } from './middleware/errorHandler';
 import rpc from './rpc';
 import pkg from '../package.json';
 
@@ -17,5 +18,7 @@ app.get('/', (req, res) => {
   const version = commit ? `${pkg.version}#${commit.substr(0, 7)}` : pkg.version;
   res.json({ version, port: PORT });
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}`));

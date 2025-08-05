@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import express from 'express';
 import { ZodError } from 'zod';
 
 const HTTP_STATUS_MESSAGES: Record<number, string> = {
@@ -6,20 +6,25 @@ const HTTP_STATUS_MESSAGES: Record<number, string> = {
   500: 'Internal Server Error'
 };
 
-export function rpcSuccess(res: Response, result: any, id: number) {
-  res.json({
-    jsonrpc: '2.0',
-    result,
-    id
-  });
-}
+export function errorHandler(
+  err: any,
+  req: express.Request,
+  res: express.Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: express.NextFunction
+) {
+  const id = req.body?.id ?? 0;
 
-export function rpcError(res: Response, code: number, e: unknown, id: number) {
+  let code = 500;
+  if (err instanceof ZodError) {
+    code = 400;
+  }
+
   const message = HTTP_STATUS_MESSAGES[code] || 'unauthorized';
-  let errorData = e;
+  let errorData = err;
 
-  if (e instanceof ZodError) {
-    errorData = e.issues.map(issue => ({
+  if (err instanceof ZodError) {
+    errorData = err.issues.map(issue => ({
       path: issue.path,
       code: issue.code,
       message: issue.message
