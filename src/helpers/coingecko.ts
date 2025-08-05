@@ -240,6 +240,7 @@ function getPlatformId(network: number): string | undefined {
  * - Token address is invalid or not found
  * - No price data available for the specified timestamp
  * - API response contains no prices
+ * - Missing or invalid API key
  *
  * Network errors from the fetch request are not caught and will bubble up to the caller.
  */
