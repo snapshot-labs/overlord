@@ -12,10 +12,12 @@ The codebase follows a modular architecture:
 
 1. **Express Server** (`src/index.ts`): Main entry point with CORS, JSON middleware, and route setup
 2. **JSON-RPC Router** (`src/rpc.ts`): Handles `get_value_by_strategy` method with request validation
-3. **Strategy System** (`src/strategies/`): Pluggable pricing strategies with unified interface
-4. **CoinGecko Integration** (`src/helpers/coingecko.ts`): API client with platform ID mappings for 200+ networks
-5. **Token Helpers** (`src/helpers/token.ts`): ERC20 token utilities for decimal conversion
-6. **Utilities** (`src/helpers/utils.ts`): RPC response helpers and common functions
+3. **Validation Middleware** (`src/middleware/validation.ts`): Zod-based input validation and sanitization
+4. **Strategy System** (`src/strategies/`): Pluggable pricing strategies with unified interface
+5. **CoinGecko Integration** (`src/helpers/coingecko.ts`): API client with platform ID mappings for 200+ networks
+6. **Token Helpers** (`src/helpers/token.ts`): ERC20 token utilities for decimal conversion
+7. **Cache System** (`src/helpers/cache.ts`): In-memory caching for API responses
+8. **Utilities** (`src/helpers/utils.ts`): RPC response helpers and common functions
 
 ### Strategy Architecture
 
@@ -107,7 +109,20 @@ Returns array of USD unit prices corresponding to each strategy in the same orde
 ## Code Patterns
 
 - **Error Handling**: Uses `rpcError()` and `rpcSuccess()` helpers for consistent JSON-RPC responses
-- **Caching**: CoinGecko responses are cached in-memory with composite keys
+- **Input Validation**: All requests pass through Zod validation middleware before reaching business logic
+- **Caching**: CoinGecko responses are cached in-memory with composite keys using `withCache()` helper
 - **Strategy Registration**: Strategies are registered in `src/strategies/index.ts` with name-to-function mapping
-- **Type Safety**: Full TypeScript with interfaces for strategy configs and parameters
+- **Type Safety**: Full TypeScript with flexible interfaces - strategy params accept `[key: string]: any` for extensibility
 - **Decimal Handling**: Token amounts are converted from wei to readable units using token decimals
+
+## Runtime Requirements
+
+- Node.js >=22.0.0 or Bun >=1.0.0
+- CoinGecko Pro API key in environment variables
+
+## Key Implementation Details
+
+- **Strategy Parameters**: `StrategyConfig.params` accepts flexible objects with any string keys to support diverse strategy implementations
+- **Network Validation**: Format validation in middleware (regex), business rules in domain layer
+- **Cache Strategy**: Simple in-memory Map with no TTL or eviction - suitable for short-lived processes
+- **Error Flow**: Validation errors return 400, business logic errors return 500 (could be improved with error classification)
