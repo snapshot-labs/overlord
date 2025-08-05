@@ -255,15 +255,51 @@ token
 
 ## Error Handling
 
-The API returns standardized JSON-RPC 2.0 error responses:
+The API returns standardized JSON-RPC 2.0 error responses. For validation errors, the `data` field contains an array of specific field errors:
 
 ```json
 {
   "jsonrpc": "2.0",
   "error": {
     "code": 400,
-    "message": "unauthorized",
-    "data": "Network is required"
+    "message": "Bad Request",
+    "data": [
+      {
+        "path": [
+          "params",
+          "strategies",
+          0,
+          "network"
+        ],
+        "code": "invalid_format",
+        "message": "Network must be a valid positive integer string"
+      },
+      {
+        "path": [
+          "params",
+          "strategies",
+          1,
+          "params",
+          "address"
+        ],
+        "code": "invalid_format",
+        "message": "Address must be a valid EVM address"
+      }
+    ]
+  },
+  "id": 2
+}
+```
+
+For other errors, the `data` field may contain a simple error message:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": 500,
+    "message": "Internal Server Error",
+    "data": "Failed to fetch token price"
   },
   "id": 1
 }
