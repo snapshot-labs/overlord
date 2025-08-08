@@ -38,15 +38,11 @@ const RpcRequestSchema = z.object({
   id: z.number().optional().default(0)
 });
 
-export function validateRequest(
+export async function validateRequest(
   req: express.Request,
-  res: express.Response,
+  _res: express.Response,
   next: express.NextFunction
 ) {
-  try {
-    (req as any).validatedData = RpcRequestSchema.parse(req.body);
-    next();
-  } catch (error) {
-    next(error);
-  }
+  (req as any).validatedData = await RpcRequestSchema.parseAsync(req.body);
+  next();
 }
