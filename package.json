@@ -3,16 +3,11 @@
   "version": "0.1.0",
   "description": "JSON-RPC server for snapshot strategies token unit pricing in USD",
   "license": "MIT",
-  "type": "commonjs",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "bun run tsc",
     "typecheck": "bun run tsc --noEmit",
     "lint": "bun run eslint ./src ./test --ext .ts",
     "lint:fix": "bun run lint --fix",
-    "prepare": "bun run build",
-    "prepublishOnly": "bun run lint",
     "test": "bun test",
     "dev": "bun --watch src/index.ts",
     "start": "node dist/index.js"
@@ -43,9 +38,5 @@
     "prettier": "^2.7.1",
     "supertest": "^7.1.4",
     "typescript": "^5.8.0"
-  },
-  "files": [
-    "dist/**/*",
-    "src/**/*"
-  ]
+  }
 }
