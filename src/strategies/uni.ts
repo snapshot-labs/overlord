@@ -1,11 +1,11 @@
 import erc20BalanceOf from './erc20-balance-of';
+import { StrategyParams } from './index';
 
-interface Params {
-  symbol?: string;
-  decimals?: number;
-}
-
-export default async function getValue(params: Params, network: number, snapshot: number) {
+export default async function getValue(
+  params: StrategyParams,
+  network: number,
+  snapshot: number
+): Promise<number> {
   if (network !== 1) return 0;
 
   return erc20BalanceOf(

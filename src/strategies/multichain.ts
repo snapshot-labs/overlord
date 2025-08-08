@@ -1,14 +1,14 @@
-import { getVpValueByStrategy } from '../helpers/utils';
+import getStrategiesValue, { NestedStrategyParams } from './index';
 
-interface Params {
-  strategies: any[];
-}
-
-export default async function getValue(params: Params, network: number, snapshot: number) {
+export default async function getValue(
+  params: NestedStrategyParams,
+  network: number,
+  snapshot: number
+): Promise<number> {
   if (!params.strategies || !Array.isArray(params.strategies) || params.strategies.length === 0)
     return 0;
 
-  const vpValueByStrategy = await getVpValueByStrategy(network, snapshot, params.strategies);
+  const vpValueByStrategy = await getStrategiesValue(network, snapshot, params.strategies);
 
   return Math.min(...vpValueByStrategy);
 }

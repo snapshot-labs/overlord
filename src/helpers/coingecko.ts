@@ -1,8 +1,9 @@
+import { withCache } from './cache';
+
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
-
-const cache = new Map<string, number>();
-
+const TIME_WINDOW = 1800;
 const BASE_URL = 'https://pro-api.coingecko.com/api/v3';
+const CURRENCY = 'usd';
 
 const PLATFORM_IDS = {
   '1': 'ethereum',
@@ -221,35 +222,51 @@ const PLATFORM_IDS = {
   '999': 'hyperevm'
 };
 
-function getPlatformId(network: number): string {
-  return PLATFORM_IDS[network.toString()];
+function getPlatformId(network: number): string | undefined {
+  return PLATFORM_IDS[network.toString() as keyof typeof PLATFORM_IDS];
 }
 
+/**
+ * Fetches the historical token price from CoinGecko API at a specific timestamp.
+ *
+ * @param network - The blockchain network ID
+ * @param address - The token contract address
+ * @param ts - Unix timestamp (in seconds) for the price query
+ * @returns Promise resolving to the token price in USD, or 0 if data is unavailable
+ *
+ * @remarks
+ * This function will return 0 in the following cases:
+ * - Network is not supported (no platform ID mapping)
+ * - Token address is invalid or not found
+ * - No price data available for the specified timestamp
+ * - API response contains no prices
+ * - Missing or invalid API key
+ *
+ * Network errors from the fetch request are not caught and will bubble up to the caller.
+ */
 export async function getTokenPriceAtTimestamp(network: number, address: string, ts: number) {
-  const key = `${network}:${address}:${ts}`;
+  return withCache(`price:${network}:${address}:${ts}`, async () => {
+    const platformId = getPlatformId(network);
+    if (!platformId) return 0;
 
-  if (cache.has(key)) return cache.get(key)!;
+    const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
+      {
+        vs_currency: CURRENCY,
+        from: (ts - TIME_WINDOW).toString(),
+        to: (ts + TIME_WINDOW).toString(),
+        x_cg_pro_api_key: COINGECKO_API_KEY
+      }
+    )}`;
 
-  const platformId = getPlatformId(network);
-  const TIME_WINDOW = 1800;
-  const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
-    {
-      vs_currency: 'usd',
-      from: (ts - TIME_WINDOW).toString(),
-      to: (ts + TIME_WINDOW).toString(),
-      x_cg_pro_api_key: COINGECKO_API_KEY
-    }
-  )}`;
+    const response = await fetch(url);
+    const data: any = await response.json();
 
-  const response = await fetch(url);
-  const data: any = await response.json();
+    if (!data.prices?.length) return 0;
 
-  if (!data.prices?.length) return 0;
+    const [, price] = data.prices.reduce((closest: any, current: any) =>
+      Math.abs(current[0] - ts) < Math.abs(closest[0] - ts) ? current : closest
+    );
 
-  const [, price] = data.prices.reduce((closest: any, current: any) =>
-    Math.abs(current[0] - ts) < Math.abs(closest[0] - ts) ? current : closest
-  );
-  cache.set(key, price);
-
-  return price;
+    return price;
+  });
 }

@@ -1,4 +1,4 @@
-name: Test
+name: Lint
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build-test:
+  lint:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
@@ -17,7 +17,4 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: bun run build
-      - run: bun test
-        env:
-          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+      - run: bun run lint
