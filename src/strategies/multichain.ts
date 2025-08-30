@@ -5,10 +5,18 @@ export default async function getValue(
   network: number,
   snapshot: number
 ): Promise<number> {
-  if (!params.strategies || !Array.isArray(params.strategies) || params.strategies.length === 0)
+  if (
+    !params.strategies ||
+    !Array.isArray(params.strategies) ||
+    params.strategies.length === 0
+  )
     return 0;
 
-  const vpValueByStrategy = await getStrategiesValue(network, snapshot, params.strategies);
+  const vpValueByStrategy = await getStrategiesValue(
+    network,
+    snapshot,
+    params.strategies
+  );
 
   return Math.min(...vpValueByStrategy);
 }

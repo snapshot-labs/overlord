@@ -39,7 +39,11 @@ export default async function getValue(
   const decimals = params.decimals ?? DEFAULT_DECIMAL;
 
   const tokenDecimals = await getTokenDecimals(network, params.address);
-  const price = await getTokenPriceAtTimestamp(network, params.address, snapshot);
+  const price = await getTokenPriceAtTimestamp(
+    network,
+    params.address,
+    snapshot
+  );
 
   return price / Math.pow(10, tokenDecimals - decimals);
 }

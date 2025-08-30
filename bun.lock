@@ -12,8 +12,8 @@
         "zod": "^4.0.14",
       },
       "devDependencies": {
-        "@snapshot-labs/eslint-config": "^0.1.0-beta.7",
-        "@snapshot-labs/prettier-config": "^0.1.0-beta.7",
+        "@snapshot-labs/eslint-config": "^0.1.0-beta.21",
+        "@snapshot-labs/prettier-config": "^0.1.0-beta.19",
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.3",
         "@types/node": ">=22.0.0",
@@ -103,7 +103,7 @@
 
     "@snapshot-labs/eslint-config-base": ["@snapshot-labs/eslint-config-base@0.1.0-beta.21", "", { "dependencies": { "@typescript-eslint/eslint-plugin": "^8.29.1", "@typescript-eslint/parser": "^8.29.1", "eslint-config-prettier": "^10.1.1", "eslint-plugin-import": "^2.31.0", "eslint-plugin-prettier": "^5.2.6" }, "peerDependencies": { "eslint": "^8.0.0", "typescript": "^4.0.0 || ^5.0.0" } }, "sha512-1ZuKV3bn8OW3l9NgA0wnt55khoc0hIWBbkNjIytPnG00WlJTWLNgjHAhRQHaD4swK/3oaj8GSTxiOm0eEIfXeA=="],
 
-    "@snapshot-labs/prettier-config": ["@snapshot-labs/prettier-config@0.1.0-beta.7", "", {}, "sha512-k/FUf4VWhwLFUmKuWs2mNvmPe691hqhvCJuujD4TfbIivWysmL1TqthwfdQUrQEAQUqVQ2ZKEiGkbufp5J27eQ=="],
+    "@snapshot-labs/prettier-config": ["@snapshot-labs/prettier-config@0.1.0-beta.19", "", {}, "sha512-vpfk3WU4idf7o0go4J+JnzZTRXB+KJEw39yElZhXxq4rzBQBzeZm/9xvlew4ZdN2A2bAHY4Ov6NL0/C8I+R1TA=="],
 
     "@types/body-parser": ["@types/body-parser@1.19.6", "", { "dependencies": { "@types/connect": "*", "@types/node": "*" } }, "sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g=="],
 

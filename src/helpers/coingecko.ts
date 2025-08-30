@@ -244,7 +244,11 @@ function getPlatformId(network: number): string | undefined {
  *
  * Network errors from the fetch request are not caught and will bubble up to the caller.
  */
-export async function getTokenPriceAtTimestamp(network: number, address: string, ts: number) {
+export async function getTokenPriceAtTimestamp(
+  network: number,
+  address: string,
+  ts: number
+) {
   return withCache(`price:${network}:${address}:${ts}`, async () => {
     const platformId = getPlatformId(network);
     if (!platformId) return 0;

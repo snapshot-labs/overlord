@@ -20,11 +20,18 @@ import { withCache } from './cache';
  * - Contract does not implement decimals() function
  * - RPC provider connection issues
  */
-export async function getTokenDecimals(network: number, address: string): Promise<number> {
+export async function getTokenDecimals(
+  network: number,
+  address: string
+): Promise<number> {
   return withCache(`decimals:${network}:${address}`, async () => {
     const url = `https://brovider.xyz/${network}`;
     const provider = new StaticJsonRpcProvider(url, network);
-    const contract = new Contract(address, ['function decimals() view returns (uint8)'], provider);
+    const contract = new Contract(
+      address,
+      ['function decimals() view returns (uint8)'],
+      provider
+    );
 
     return await contract.decimals();
   });

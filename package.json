@@ -29,8 +29,8 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
-    "@snapshot-labs/eslint-config": "^0.1.0-beta.7",
-    "@snapshot-labs/prettier-config": "^0.1.0-beta.7",
+    "@snapshot-labs/eslint-config": "^0.1.0-beta.21",
+    "@snapshot-labs/prettier-config": "^0.1.0-beta.19",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.3",
     "@types/node": ">=22.0.0",

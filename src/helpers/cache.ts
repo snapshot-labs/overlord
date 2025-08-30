@@ -1,5 +1,8 @@
 const cache = new Map<string, any>();
-export async function withCache<T>(key: string, fetcherFn: () => Promise<T>): Promise<T> {
+export async function withCache<T>(
+  key: string,
+  fetcherFn: () => Promise<T>
+): Promise<T> {
   if (cache.has(key)) {
     return cache.get(key);
   }

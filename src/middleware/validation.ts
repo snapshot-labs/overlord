@@ -27,9 +27,13 @@ const StrategyConfigSchema: z.ZodType<any> = z.lazy(() =>
 );
 
 const RpcParamsSchema = z.object({
-  network: z.string().regex(/^\d+$/, 'Network must be a valid positive integer string'),
+  network: z
+    .string()
+    .regex(/^\d+$/, 'Network must be a valid positive integer string'),
   snapshot: z.number().int().positive('Snapshot must be a positive integer'),
-  strategies: z.array(StrategyConfigSchema).min(1, 'At least one strategy is required')
+  strategies: z
+    .array(StrategyConfigSchema)
+    .min(1, 'At least one strategy is required')
 });
 
 const RpcRequestSchema = z.object({

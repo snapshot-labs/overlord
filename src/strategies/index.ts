@@ -19,7 +19,11 @@ export interface StrategyConfig {
   params?: StrategyParams | NestedStrategyParams | { [key: string]: any };
 }
 
-type StrategyFunction = (params: any, network: number, snapshot: number) => Promise<number>;
+type StrategyFunction = (
+  params: any,
+  network: number,
+  snapshot: number
+) => Promise<number>;
 
 const strategies: Record<string, StrategyFunction> = {
   'erc20-balance-of': erc20BalanceOf,
