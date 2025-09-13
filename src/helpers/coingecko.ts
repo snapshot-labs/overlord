@@ -250,6 +250,8 @@ export async function getTokenPriceAtTimestamp(
   ts: number
 ) {
   return withCache(`price:${network}:${address}:${ts}`, async () => {
+    if (!COINGECKO_API_KEY) throw new Error('Missing CoinGecko API key');
+
     const platformId = getPlatformId(network);
     if (!platformId) return 0;
 

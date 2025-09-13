@@ -36,7 +36,7 @@ export function errorHandler(
     error: {
       code,
       message,
-      data: errorData
+      data: errorData.message || errorData
     },
     id
   });
