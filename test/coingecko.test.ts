@@ -1,5 +1,3 @@
-// @ts-ignore
-import { describe, expect, it } from 'bun:test';
 import { getTokenPriceAtTimestamp } from '../src/helpers/coingecko';
 
 describe('getTokenPriceAtTimestamp', () => {

@@ -31,31 +31,31 @@ Strategies implement the signature: `(params: any, network: number, snapshot: nu
 
 ```bash
 # Build TypeScript to dist/
-bun run build
+yarn build
 
 # Type checking without emit
-bun run typecheck
+yarn typecheck
 
-# Run tests with Bun test runner
-bun test
+# Run tests with Jest test runner
+yarn test
 
 # Run specific test file
-bun test test/strategies.test.ts
+yarn test test/strategies.test.ts
 
 # Update test snapshots
-bun test --update-snapshots
+yarn test --updateSnapshot
 
 # Lint code
-bun run lint
+yarn lint
 
 # Auto-fix lint issues (run after each file edit)
-bun run lint:fix
+yarn lint:fix
 
 # Development server with watch mode
-bun run dev
+yarn dev
 
 # Production server
-bun run start
+yarn start
 ```
 
 ## Environment Requirements
@@ -73,7 +73,7 @@ The service supports 200+ blockchain networks via CoinGecko platform IDs defined
 
 ## Testing Strategy
 
-- Uses Bun's built-in test runner with snapshot testing
+- Uses Jest test runner with snapshot testing
 - Tests are organized by functionality: strategies, coingecko, token helpers, e2e
 - Snapshots ensure consistent API responses across changes
 - Tests use real token addresses and network IDs for integration testing
@@ -117,7 +117,8 @@ Returns array of USD unit prices corresponding to each strategy in the same orde
 
 ## Runtime Requirements
 
-- Node.js >=22.0.0 or Bun >=1.0.0
+- Node.js >=22.0.0
+- Yarn package manager
 - CoinGecko Pro API key in environment variables
 
 ## Key Implementation Details

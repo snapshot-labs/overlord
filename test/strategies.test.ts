@@ -1,5 +1,3 @@
-// @ts-ignore
-import { describe, expect, it } from 'bun:test';
 import getStrategiesValue from '../src/strategies';
 
 describe('Strategies', () => {

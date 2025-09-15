@@ -1,5 +1,3 @@
-// @ts-ignore
-import { describe, expect, it } from 'bun:test';
 import { getTokenDecimals } from '../src/helpers/token';
 
 describe('getTokenDecimals', () => {
