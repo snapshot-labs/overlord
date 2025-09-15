@@ -1,18 +1,13 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
-    "moduleResolution": "node16",
-    "allowJs": true,
-    "declaration": true,
+    "target": "ESNext",
+    "module": "CommonJS",
     "outDir": "./dist",
+    "rootDir": "./src",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
     "resolveJsonModule": true,
-    "noImplicitAny": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test"]
+  "include": ["src/**/*"]
 }
