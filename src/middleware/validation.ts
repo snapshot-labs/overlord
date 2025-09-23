@@ -2,6 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 
 const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
+export const BATCH_MAX_LIMIT = 100;
 
 const StrategyConfigSchema: z.ZodType<any> = z.lazy(() =>
   z.object({
@@ -38,7 +39,13 @@ const RpcParamsSchema = z.object({
 
 const RpcRequestSchema = z.object({
   method: z.literal('get_value_by_strategy'),
-  params: RpcParamsSchema,
+  params: z
+    .array(RpcParamsSchema)
+    .min(1, 'At least one proposal param is required')
+    .max(
+      BATCH_MAX_LIMIT,
+      `A maximum of ${BATCH_MAX_LIMIT} proposals param are allowed`
+    ),
   id: z.number().optional().default(0)
 });
 

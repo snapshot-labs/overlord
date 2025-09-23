@@ -33,7 +33,7 @@ Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/snapshot-labs/overlord.git
 cd overlord
-bun install
+yarn install
 ```
 
 ## Environment Setup
@@ -50,14 +50,14 @@ Start the server:
 
 ```bash
 # Development mode with watch
-bun run dev
+yarn dev
 
 # Production mode
-bun start
+yarn start
 
 # Build and run
-bun run build
-bun run start
+yarn build
+yarn start
 ```
 
 The server will be available at `http://localhost:3000` (or your
@@ -65,53 +65,15 @@ configured PORT).
 
 ## JSON-RPC API
 
-Send POST requests to `/` with the following format:
+### `get_value_by_strategy`
+
+The `get_value_by_strategy` method accepts an array of strategy requests, allowing you to process single or multiple requests efficiently in one call. The maximum number of requests per call is 100.
 
 ```json
 {
   "method": "get_value_by_strategy",
-  "params": {
-    "network": 1,
-    "snapshot": 1640998800,
-    "strategies": [
-      {
-        "name": "erc20-balance-of",
-        "network": "1",
-        "params": {
-          "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-          "decimals": 18
-        }
-      }
-    ]
-  },
-  "id": 1
-}
-```
-
-Response:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "result": [1234.56],
-  "id": 1
-}
-```
-
-The result array contains the USD unit prices corresponding to each token
-in the snapshot strategies. The array is the same size and order as the
-input `params.strategies` array, and returns `0` for unsupported strategies.
-For strategies with inner strategies, it returns the lowest value among the
-inner strategies.
-
-### Example Request
-
-```bash
-curl -X POST http://localhost:3000 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "method": "get_value_by_strategy",
-    "params": {
+  "params": [
+    {
       "network": 1,
       "snapshot": 1640998800,
       "strategies": [
@@ -122,9 +84,104 @@ curl -X POST http://localhost:3000 \
             "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
             "decimals": 18
           }
+        },
+        {
+          "name": "erc20-balance-of",
+          "network": "1",
+          "params": {
+            "address": "0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b",
+            "decimals": 18
+          }
+        },
+        {
+          "name": "erc20-balance-of",
+          "network": "1",
+          "params": {
+            "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+            "decimals": 18
+          }
         }
       ]
     },
+    {
+      "network": 137,
+      "snapshot": 1640998800,
+      "strategies": [
+        {
+          "name": "erc20-balance-of",
+          "network": "137",
+          "params": {
+            "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "decimals": 6
+          }
+        }
+      ]
+    }
+  ],
+  "id": 1
+}
+```
+
+**Response:**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": [[17.26, 125.43, 1.0], [1.0]],
+  "id": 1
+}
+```
+
+The result is a 2D array where each inner array contains the USD unit prices
+for the strategies in the corresponding request. Each inner array has the same
+size and order as the input `strategies` array, and returns `0` for unsupported strategies.
+For strategies with inner strategies, it returns the lowest value among the inner strategies.
+
+### Example Requests
+
+```bash
+curl -X POST http://localhost:3000 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "method": "get_value_by_strategy",
+    "params": [
+      {
+        "network": "1",
+        "snapshot": 1640998800,
+        "strategies": [
+          {
+            "name": "erc20-balance-of",
+            "network": "1",
+            "params": {
+              "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+              "decimals": 18
+            }
+          },
+          {
+            "name": "erc20-balance-of",
+            "network": "1",
+            "params": {
+              "address": "0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b",
+              "decimals": 18
+            }
+          }
+        ]
+      },
+      {
+        "network": "137",
+        "snapshot": 1640998800,
+        "strategies": [
+          {
+            "name": "erc20-balance-of",
+            "network": "137",
+            "params": {
+              "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+              "decimals": 6
+            }
+          }
+        ]
+      }
+    ],
     "id": 1
   }'
 ```
@@ -185,47 +242,48 @@ Strategies implement the signature: `(params: any, network: number, snapshot: nu
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) (recommended) or Node.js 22+
+- Node.js 22+
+- Yarn package manager
 - CoinGecko Pro API key
 
 ### Scripts
 
 ```bash
 # Install dependencies
-bun install
+yarn install
 
 # Build the project
-bun run build
+yarn build
 
 # Run tests
-bun test
+yarn test
 
 # Start development server with watch mode
-bun run dev
+yarn dev
 
 # Lint code
-bun run lint
+yarn lint
 
 # Auto-fix lint issues
-bun run lint:fix
+yarn lint:fix
 
 # Type checking
-bun run typecheck
+yarn typecheck
 ```
 
 ### Testing
 
-The project uses Bun's built-in test runner with snapshot testing:
+The project uses Jest with snapshot testing:
 
 ```bash
 # Run all tests
-bun test
+yarn test
 
 # Run specific test
-bun test test/strategies.test.ts
+yarn test test/strategies.test.ts
 
 # Update snapshots
-bun test --update-snapshots
+yarn test -u
 ```
 
 ## API Reference
@@ -234,10 +292,13 @@ bun test --update-snapshots
 
 #### `get_value_by_strategy`
 
-Fetch USD unit prices for tokens specified in snapshot strategies at a
-given block timestamp.
+Fetch USD unit prices for tokens specified in snapshot strategies at given block timestamps.
+The method accepts an array of strategy requests, allowing you to process multiple networks,
+timestamps, or strategy configurations in a single call.
 
-**Parameters:**
+**Parameters:** Array of request objects (maximum 100 requests per call)
+
+Each request object contains:
 
 - `network` (number): Blockchain network ID
 - `snapshot` (number): Unix timestamp in seconds for the snapshot block
@@ -251,12 +312,14 @@ given block timestamp.
   - `address` (string): EVM token contract address (e.g., `0x1f9840a85d5af5bf1d1762f925bdaddc4201f984`)
   - `decimals` (number): Token decimals (e.g., `18`)
 
-**Returns:** Array of numbers representing USD unit prices for each
-token
+**Returns:** Array of arrays, where each inner array contains the USD unit prices
+for the strategies in the corresponding request.
 
 ## Error Handling
 
 The server uses centralized error handling middleware that automatically catches and formats errors into standardized JSON-RPC 2.0 responses. All errors are processed through a single error handler that distinguishes between validation errors (400) and internal server errors (500).
+
+**Request Limits:** Requests with more than 100 strategy objects in the params array will return a 400 Bad Request error.
 
 For validation errors, the `data` field contains an array of specific field errors:
 
@@ -268,23 +331,12 @@ For validation errors, the `data` field contains an array of specific field erro
     "message": "Bad Request",
     "data": [
       {
-        "path": [
-          "params",
-          "strategies",
-          0,
-          "network"
-        ],
+        "path": ["params", "strategies", 0, "network"],
         "code": "invalid_format",
         "message": "Network must be a valid positive integer string"
       },
       {
-        "path": [
-          "params",
-          "strategies",
-          1,
-          "params",
-          "address"
-        ],
+        "path": ["params", "strategies", 1, "params", "address"],
         "code": "invalid_format",
         "message": "Address must be a valid EVM address"
       }
@@ -318,8 +370,8 @@ Common error codes:
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Make your changes
-4. Run tests: `bun test`
-5. Run linting: `bun run lint:fix`
+4. Run tests: `yarn test`
+5. Run linting: `yarn lint:fix`
 6. Commit changes: `git commit -am 'Add my feature'`
 7. Push to branch: `git push origin feature/my-feature`
 8. Create a Pull Request

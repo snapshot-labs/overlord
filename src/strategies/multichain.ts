@@ -12,11 +12,13 @@ export default async function getValue(
   )
     return 0;
 
-  const vpValueByStrategy = await getStrategiesValue(
-    network,
-    snapshot,
-    params.strategies
-  );
+  const vpValueByStrategy = await getStrategiesValue([
+    {
+      network,
+      snapshot,
+      strategies: params.strategies
+    }
+  ]);
 
-  return Math.min(...vpValueByStrategy);
+  return Math.min(...vpValueByStrategy[0]);
 }

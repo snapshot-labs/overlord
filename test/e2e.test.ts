@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import request from 'supertest';
 import { errorHandler } from '../src/middleware/errorHandler';
+import { BATCH_MAX_LIMIT } from '../src/middleware/validation';
 import rpcRouter from '../src/rpc';
 
 describe('E2E API Tests', () => {
@@ -22,20 +23,22 @@ describe('E2E API Tests', () => {
   it('should execute get_value_by_strategy with erc20-balance-of strategy', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            network: '1',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 18
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: '1',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 1
     };
 
@@ -47,29 +50,80 @@ describe('E2E API Tests', () => {
   it('should execute get_value_by_strategy with multiple strategies', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '8453',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            network: '8453',
-            params: {
-              address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-              decimals: 6
+      params: [
+        {
+          network: '8453',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: '8453',
+              params: {
+                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+                decimals: 6
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              network: '8453',
+              params: {
+                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+                decimals: 5
+              }
             }
-          },
-          {
-            name: 'erc20-balance-of',
-            network: '8453',
-            params: {
-              address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-              decimals: 5
-            }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 2
+    };
+
+    const response = await request(app).post('/').send(payload).expect(200);
+
+    expect(response.body.result).toMatchSnapshot();
+  });
+
+  it('should execute get_value_by_strategy with multiple requests', async () => {
+    const payload = {
+      method: 'get_value_by_strategy',
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: '1',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        {
+          network: '8453',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: '8453',
+              params: {
+                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+                decimals: 6
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              network: '8453',
+              params: {
+                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+                decimals: 5
+              }
+            }
+          ]
+        }
+      ],
+      id: 19
     };
 
     const response = await request(app).post('/').send(payload).expect(200);
@@ -139,15 +193,17 @@ describe('E2E API Tests', () => {
   it('should return error when network is missing', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: { address: '0x123' }
-          }
-        ]
-      },
+      params: [
+        {
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: { address: '0x123' }
+            }
+          ]
+        }
+      ],
       id: 6
     };
 
@@ -166,15 +222,17 @@ describe('E2E API Tests', () => {
   it('should return error when snapshot is missing', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: { address: '0x123' }
-          }
-        ]
-      },
+      params: [
+        {
+          network: '1',
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: { address: '0x123' }
+            }
+          ]
+        }
+      ],
       id: 7
     };
 
@@ -193,10 +251,12 @@ describe('E2E API Tests', () => {
   it('should return error when strategies is missing', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800
-      },
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800
+        }
+      ],
       id: 8
     };
 
@@ -215,18 +275,20 @@ describe('E2E API Tests', () => {
   it('should return error when strategy name is missing', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 18
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 9
     };
 
@@ -245,19 +307,21 @@ describe('E2E API Tests', () => {
   it('should return error when address is not a valid EVM address', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: 'invalid-address',
-              decimals: 18
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: 'invalid-address',
+                decimals: 18
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 10
     };
 
@@ -276,19 +340,21 @@ describe('E2E API Tests', () => {
   it('should return error when network is not a number', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: 'invalid',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 18
+      params: [
+        {
+          network: 'invalid',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 11
     };
 
@@ -307,19 +373,21 @@ describe('E2E API Tests', () => {
   it('should return error when snapshot is not a number', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 'invalid',
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 18
+      params: [
+        {
+          network: '1',
+          snapshot: 'invalid',
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 12
     };
 
@@ -338,19 +406,21 @@ describe('E2E API Tests', () => {
   it('should return error when decimals is not a valid number', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 'invalid'
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 'invalid'
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 13
     };
 
@@ -369,19 +439,21 @@ describe('E2E API Tests', () => {
   it('should return error when network is zero or negative', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: -1,
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 18
+      params: [
+        {
+          network: -1,
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 14
     };
 
@@ -400,19 +472,21 @@ describe('E2E API Tests', () => {
   it('should return error when snapshot is zero or negative', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 0,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 18
+      params: [
+        {
+          network: '1',
+          snapshot: 0,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 15
     };
 
@@ -431,19 +505,21 @@ describe('E2E API Tests', () => {
   it('should return error when decimals is out of range (>255)', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: 256
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 256
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 16
     };
 
@@ -462,19 +538,21 @@ describe('E2E API Tests', () => {
   it('should return error when decimals is negative', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'erc20-balance-of',
-            params: {
-              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-              decimals: -1
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: -1
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 17
     };
 
@@ -493,18 +571,20 @@ describe('E2E API Tests', () => {
   it('should return error when nested strategies array is empty', async () => {
     const payload = {
       method: 'get_value_by_strategy',
-      params: {
-        network: '1',
-        snapshot: 1640998800,
-        strategies: [
-          {
-            name: 'multichain',
-            params: {
-              strategies: []
+      params: [
+        {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'multichain',
+              params: {
+                strategies: []
+              }
             }
-          }
-        ]
-      },
+          ]
+        }
+      ],
       id: 18
     };
 
@@ -517,6 +597,37 @@ describe('E2E API Tests', () => {
         message: 'Bad Request'
       },
       id: 18
+    });
+  });
+
+  it('should return error when params array exceeds maximum limit', async () => {
+    const payload = {
+      method: 'get_value_by_strategy',
+      params: Array(BATCH_MAX_LIMIT + 1).fill({
+        network: '1',
+        snapshot: 1640998800,
+        strategies: [
+          {
+            name: 'erc20-balance-of',
+            params: {
+              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+              decimals: 18
+            }
+          }
+        ]
+      }),
+      id: 19
+    };
+
+    const response = await request(app).post('/').send(payload).expect(400);
+
+    expect(response.body).toMatchObject({
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'Bad Request'
+      },
+      id: 19
     });
   });
 });
