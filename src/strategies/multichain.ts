@@ -20,5 +20,7 @@ export default async function getValue(
     }
   ]);
 
+  if (!vpValueByStrategy?.[0]?.length) return 0;
+
   return Math.min(...vpValueByStrategy[0]);
 }

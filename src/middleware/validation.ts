@@ -1,39 +1,13 @@
 import express from 'express';
 import { z } from 'zod';
 
-const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 export const BATCH_MAX_LIMIT = 100;
 
-const StrategyConfigSchema: z.ZodType<any> = z.lazy(() =>
-  z.object({
-    name: z.string().min(1, 'Strategy name is required'),
-    network: z
-      .string()
-      .regex(/^\d+$/, 'Network must be a valid positive integer string')
-      .optional(),
-    params: z
-      .looseObject({
-        address: z
-          .string()
-          .regex(EVM_ADDRESS_REGEX, 'Address must be a valid EVM address')
-          .optional(),
-        decimals: z.number().int().min(0).max(255).optional(),
-        strategies: z
-          .array(StrategyConfigSchema)
-          .min(1, 'At least one strategy is required')
-          .optional()
-      })
-      .optional()
-  })
-);
-
 const RpcParamsSchema = z.object({
-  network: z
-    .string()
-    .regex(/^\d+$/, 'Network must be a valid positive integer string'),
+  network: z.union([z.string(), z.number()]),
   snapshot: z.number().int().positive('Snapshot must be a positive integer'),
   strategies: z
-    .array(StrategyConfigSchema)
+    .array(z.looseObject({}))
     .min(1, 'At least one strategy is required')
 });
 

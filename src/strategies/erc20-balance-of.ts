@@ -1,6 +1,8 @@
+import { getAddress } from '@ethersproject/address';
 import { StrategyParams } from './index';
 import { getTokenPriceAtTimestamp } from '../helpers/coingecko';
 import { getTokenDecimals } from '../helpers/token';
+import { toInteger } from '../helpers/utils';
 
 const DEFAULT_DECIMAL = 18;
 
@@ -24,26 +26,32 @@ const DEFAULT_DECIMAL = 18;
  * - If token has 18 decimals and params.decimals is 6: divides by 10^12
  *
  * Error handling:
- * - Throws Error if params.address is missing
- * - Returns 0 on error, except for connectivity issues when fetching token decimals or CoinGecko price
+ * - Returns 0 on payload error
+ * - Throws on temporary issues, when another call may yield a different result
  */
 export default async function getValue(
   params: StrategyParams,
   network: number,
   snapshot: number
 ): Promise<number> {
-  if (!params.address) {
-    throw new Error('Address is required for erc20-balance-of strategy');
+  let address = '';
+  let decimals = DEFAULT_DECIMAL;
+
+  try {
+    address = getAddress(params.address);
+  } catch {
+    return 0;
   }
 
-  const decimals = params.decimals ?? DEFAULT_DECIMAL;
+  try {
+    decimals = toInteger(params.decimals ?? DEFAULT_DECIMAL);
+    if (decimals < 0 || decimals > 255 || !Number.isInteger(decimals)) return 0;
+  } catch {
+    return 0;
+  }
 
-  const tokenDecimals = await getTokenDecimals(network, params.address);
-  const price = await getTokenPriceAtTimestamp(
-    network,
-    params.address,
-    snapshot
-  );
+  const tokenDecimals = await getTokenDecimals(network, address);
+  const price = await getTokenPriceAtTimestamp(network, address, snapshot);
 
   return price / Math.pow(10, tokenDecimals - decimals);
 }

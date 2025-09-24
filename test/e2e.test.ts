@@ -20,108 +20,191 @@ describe('E2E API Tests', () => {
     app.use(errorHandler);
   });
 
-  it('should execute get_value_by_strategy with erc20-balance-of strategy', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              network: '1',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 18
-              }
-            }
-          ]
-        }
-      ],
-      id: 1
-    };
-
-    const response = await request(app).post('/').send(payload).expect(200);
-
-    expect(response.body.result).toMatchSnapshot();
-  });
-
-  it('should execute get_value_by_strategy with multiple strategies', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '8453',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              network: '8453',
-              params: {
-                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-                decimals: 6
-              }
-            },
-            {
-              name: 'erc20-balance-of',
-              network: '8453',
-              params: {
-                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-                decimals: 5
-              }
-            }
-          ]
-        }
-      ],
-      id: 2
-    };
-
-    const response = await request(app).post('/').send(payload).expect(200);
-
-    expect(response.body.result).toMatchSnapshot();
-  });
-
   it('should execute get_value_by_strategy with multiple requests', async () => {
     const payload = {
       method: 'get_value_by_strategy',
       params: [
         {
           network: '1',
-          snapshot: 1640998800,
+          snapshot: 1720900800,
           strategies: [
             {
               name: 'erc20-balance-of',
-              network: '1',
               params: {
                 address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              network: 1,
+              params: {
+                // This should fail as it's an EOA address
+                address: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
+                decimals: 6
+              }
+            }
+          ]
+        }, // Return [] as one of the strategy throw
+        {
+          network: '137',
+          snapshot: 1718400000,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: 137,
+              params: {
+                address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+                decimals: 6
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+                decimals: '18'
+              }
+            }
+          ]
+        }, // Both strategies valid
+        {
+          network: '56',
+          snapshot: 1715808000,
+          strategies: [
+            {
+              // will return 0 for unknown strategy
+              name: 'unknown-strategy',
+              network: 56,
+              params: {
+                address: '0x55d398326f99059ff775485246999027b3197955',
+                decimals: '18'
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
                 decimals: 18
               }
             }
           ]
         },
         {
-          network: '8453',
-          snapshot: 1640998800,
+          network: '56',
+          snapshot: 1715808000,
           strategies: [
             {
+              // will return 0 for invalid network
               name: 'erc20-balance-of',
-              network: '8453',
+              network: 'hello',
               params: {
-                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-                decimals: 6
+                address: '0x55d398326f99059ff775485246999027b3197955',
+                decimals: '18'
               }
             },
             {
               name: 'erc20-balance-of',
-              network: '8453',
               params: {
-                address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-                decimals: 5
+                address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+                decimals: 18
               }
             }
           ]
-        }
+        },
+        {
+          network: '56',
+          snapshot: 1715808000,
+          strategies: [
+            {
+              // will return 0 for invalid decimals
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x55d398326f99059ff775485246999027b3197955',
+                decimals: 'abc-18'
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        {
+          network: '56',
+          snapshot: 1715808000,
+          strategies: [
+            {
+              // will return 0 for missing address
+              name: 'erc20-balance-of',
+              network: 'hello',
+              params: {
+                decimals: '18'
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        {
+          network: '56',
+          snapshot: 1715808000,
+          strategies: [
+            {
+              // will return 0 for invalid address
+              name: 'erc20-balance-of',
+              params: {
+                address: 'hello-0x55d398326f99059ff775485246999027b3197955',
+                decimals: '18'
+              }
+            },
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        {
+          network: '56',
+          snapshot: 1715808000,
+          strategies: [
+            {
+              // will return 0 for missing params
+              name: 'erc20-balance-of'
+            },
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        {
+          network: 42161,
+          snapshot: 1722499200,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: '42161',
+              params: {
+                address: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
+                decimals: 6
+              }
+            }
+          ]
+        } // This is valid, ensure that n+1 requests work fine, when n is failing
       ],
       id: 19
     };
@@ -129,7 +212,7 @@ describe('E2E API Tests', () => {
     const response = await request(app).post('/').send(payload).expect(200);
 
     expect(response.body.result).toMatchSnapshot();
-  });
+  }, 30e3);
 
   it('should return error for unknown method', async () => {
     const payload = {
@@ -195,7 +278,7 @@ describe('E2E API Tests', () => {
       method: 'get_value_by_strategy',
       params: [
         {
-          snapshot: 1640998800,
+          snapshot: 1720900800,
           strategies: [
             {
               name: 'erc20-balance-of',
@@ -245,358 +328,6 @@ describe('E2E API Tests', () => {
         message: 'Bad Request'
       },
       id: 7
-    });
-  });
-
-  it('should return error when strategies is missing', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800
-        }
-      ],
-      id: 8
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 8
-    });
-  });
-
-  it('should return error when strategy name is missing', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 18
-              }
-            }
-          ]
-        }
-      ],
-      id: 9
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 9
-    });
-  });
-
-  it('should return error when address is not a valid EVM address', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: 'invalid-address',
-                decimals: 18
-              }
-            }
-          ]
-        }
-      ],
-      id: 10
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 10
-    });
-  });
-
-  it('should return error when network is not a number', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: 'invalid',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 18
-              }
-            }
-          ]
-        }
-      ],
-      id: 11
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 11
-    });
-  });
-
-  it('should return error when snapshot is not a number', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 'invalid',
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 18
-              }
-            }
-          ]
-        }
-      ],
-      id: 12
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 12
-    });
-  });
-
-  it('should return error when decimals is not a valid number', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 'invalid'
-              }
-            }
-          ]
-        }
-      ],
-      id: 13
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 13
-    });
-  });
-
-  it('should return error when network is zero or negative', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: -1,
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 18
-              }
-            }
-          ]
-        }
-      ],
-      id: 14
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 14
-    });
-  });
-
-  it('should return error when snapshot is zero or negative', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 0,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 18
-              }
-            }
-          ]
-        }
-      ],
-      id: 15
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 15
-    });
-  });
-
-  it('should return error when decimals is out of range (>255)', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: 256
-              }
-            }
-          ]
-        }
-      ],
-      id: 16
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 16
-    });
-  });
-
-  it('should return error when decimals is negative', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'erc20-balance-of',
-              params: {
-                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-                decimals: -1
-              }
-            }
-          ]
-        }
-      ],
-      id: 17
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 17
-    });
-  });
-
-  it('should return error when nested strategies array is empty', async () => {
-    const payload = {
-      method: 'get_value_by_strategy',
-      params: [
-        {
-          network: '1',
-          snapshot: 1640998800,
-          strategies: [
-            {
-              name: 'multichain',
-              params: {
-                strategies: []
-              }
-            }
-          ]
-        }
-      ],
-      id: 18
-    };
-
-    const response = await request(app).post('/').send(payload).expect(400);
-
-    expect(response.body).toMatchObject({
-      jsonrpc: '2.0',
-      error: {
-        code: 400,
-        message: 'Bad Request'
-      },
-      id: 18
     });
   });
 

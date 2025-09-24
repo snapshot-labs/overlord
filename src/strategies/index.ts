@@ -1,6 +1,7 @@
 import erc20BalanceOf from './erc20-balance-of';
 import multichain from './multichain';
 import uni from './uni';
+import { toInteger } from '../helpers/utils';
 
 export interface StrategyParams {
   address: string;
@@ -46,21 +47,59 @@ const strategies: Record<string, StrategyFunction> = {
   'with-delegation': multichain
 };
 
-async function executeStrategies(param: Params): Promise<Result> {
-  return Promise.all(
-    param.strategies.map(
-      strategy =>
-        strategies[strategy.name]?.(
+async function getValue(param: Params): Promise<Result> {
+  const result: Result = new Array(param.strategies.length).fill(0);
+  let processed = 0;
+  let hasError = false;
+
+  if (!param.strategies.length) {
+    return [];
+  }
+
+  // Execute all fetch in parallel
+  // but return early as soon as one fetch fails
+  return new Promise(resolve => {
+    param.strategies.forEach(async (strategy, index) => {
+      try {
+        let network = 1;
+
+        try {
+          network = toInteger(strategy.network ?? param.network);
+        } catch {
+          result[index] = 0;
+          processed++;
+
+          if (processed === param.strategies.length && !hasError) {
+            resolve(result);
+          }
+          return;
+        }
+
+        const value = await (strategies[strategy.name]?.(
           strategy.params,
-          Number(strategy.network ? strategy.network : param.network),
+          network,
           param.snapshot
-        ) ?? 0
-    )
-  );
+        ) ?? 0);
+
+        result[index] = value;
+        processed++;
+
+        if (processed === param.strategies.length && !hasError) {
+          resolve(result);
+        }
+      } catch {
+        // check to avoid multiple calls to resolve
+        if (!hasError) {
+          hasError = true;
+          resolve([]);
+        }
+      }
+    });
+  });
 }
 
 export default function getStrategiesValue(
   params: Params[]
 ): Promise<Result[]> {
-  return Promise.all(params.map(executeStrategies));
+  return Promise.all(params.map(getValue));
 }

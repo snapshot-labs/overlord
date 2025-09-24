@@ -1,30 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`E2E API Tests should execute get_value_by_strategy with erc20-balance-of strategy 1`] = `
-[
-  [
-    17.25638653634901,
-  ],
-]
-`;
-
 exports[`E2E API Tests should execute get_value_by_strategy with multiple requests 1`] = `
 [
+  [],
   [
-    17.25638653634901,
+    1.0005549504631377,
+    0.5759201593033595,
   ],
   [
-    1.0032581274541421,
-    0.10032581274541422,
+    0,
+    1.0021173448376648,
   ],
-]
-`;
-
-exports[`E2E API Tests should execute get_value_by_strategy with multiple strategies 1`] = `
-[
   [
-    1.0032581274541421,
-    0.10032581274541422,
+    0,
+    1.0021173448376648,
+  ],
+  [
+    0,
+    1.0021173448376648,
+  ],
+  [
+    0,
+    1.0021173448376648,
+  ],
+  [
+    0,
+    1.0021173448376648,
+  ],
+  [
+    0,
+    1.0021173448376648,
+  ],
+  [
+    0,
   ],
 ]
 `;
