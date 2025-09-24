@@ -67,7 +67,7 @@ configured PORT).
 
 ### `get_value_by_strategy`
 
-The `get_value_by_strategy` method accepts an array of strategy requests, allowing you to process single or multiple requests efficiently in one call. The maximum number of requests per call is 100.
+The `get_value_by_strategy` method accepts an array of request objects, allowing you to process multiple networks, timestamps, or strategy configurations efficiently in one call. The maximum number of requests per call is 100.
 
 ```json
 {
@@ -319,7 +319,9 @@ for the strategies in the corresponding request.
 
 The server uses centralized error handling middleware that automatically catches and formats errors into standardized JSON-RPC 2.0 responses. All errors are processed through a single error handler that distinguishes between validation errors (400) and internal server errors (500).
 
-**Request Limits:** Requests with more than 100 strategy objects in the params array will return a 400 Bad Request error.
+**Request Limits:** Requests with more than 100 request objects in the params array will return a 400 Bad Request error.
+
+**Temporary Errors:** In case of temporary errors (such as network connectivity issues or API timeouts), an empty array will be returned for the affected request object instead of failing the entire batch.
 
 For validation errors, the `data` field contains an array of specific field errors:
 

@@ -6,27 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is @snapshot-labs/overlord, a JSON-RPC server that provides token unit pricing in USD for snapshot strategies at specified block timestamps across 200+ blockchain networks. The service fetches historical token prices from CoinGecko's Pro API.
 
-## Architecture
-
-The codebase follows a modular architecture:
-
-1. **Express Server** (`src/index.ts`): Main entry point with CORS, JSON middleware, and route setup
-2. **JSON-RPC Router** (`src/rpc.ts`): Handles `get_value_by_strategy` method with request validation
-3. **Validation Middleware** (`src/middleware/validation.ts`): Zod-based input validation and sanitization
-4. **Strategy System** (`src/strategies/`): Pluggable pricing strategies with unified interface
-5. **CoinGecko Integration** (`src/helpers/coingecko.ts`): API client with platform ID mappings for 200+ networks
-6. **Token Helpers** (`src/helpers/token.ts`): ERC20 token utilities for decimal conversion
-7. **Cache System** (`src/helpers/cache.ts`): In-memory caching for API responses
-8. **Utilities** (`src/helpers/utils.ts`): RPC response helpers and common functions
-
-### Strategy Architecture
-
-Strategies implement the signature: `(params: any, network: number, snapshot: number) => Promise<number>`
-
-- **Core Strategy**: `erc20-balance-of` - Fetches token prices and handles decimal conversion
-- **Composite Strategies**: `multichain`, `uni` - Handle complex scenarios with multiple tokens/networks
-- **Strategy Aliases**: Multiple strategy names map to the same implementation (e.g., all ERC20 variants use `erc20-balance-of`)
-
 ## Development Commands
 
 ```bash
@@ -36,7 +15,7 @@ yarn build
 # Type checking without emit
 yarn typecheck
 
-# Run tests with Jest test runner
+# Run all tests
 yarn test
 
 # Run specific test file
@@ -54,76 +33,135 @@ yarn lint:fix
 # Development server with watch mode
 yarn dev
 
-# Production server
+# Production server (requires build first)
 yarn start
 ```
 
-## Environment Requirements
+## Architecture
 
-- **COINGECKO_API_KEY**: Required Pro API key for CoinGecko price data
-- **PORT**: Optional server port (defaults to 3000)
-- **COMMIT_HASH**: Optional commit hash for version endpoint
+### Request Flow
+```
+HTTP Request → Express CORS/JSON → Validation Middleware → RPC Handler → Strategy Execution → Response
+                                        ↓ (on error)
+                                   Error Handler → JSON-RPC Error Response
+```
 
-## Network Support
+### Batch Request Processing
 
-The service supports 200+ blockchain networks via CoinGecko platform IDs defined in `src/helpers/coingecko.ts:PLATFORM_IDS`. Key networks include:
-- Ethereum (1), Polygon (137), BSC (56)
-- Arbitrum One (42161), Optimism (10), Base (8453)
-- Avalanche (43114), and many others
+The server supports batch requests at two levels:
+1. **Multiple proposals per request** - up to 100 proposal objects per JSON-RPC request
+2. **Multiple strategies per proposal** - each proposal can contain multiple strategies
 
-## Testing Strategy
-
-- Uses Jest test runner with snapshot testing
-- Tests are organized by functionality: strategies, coingecko, token helpers, e2e
-- Snapshots ensure consistent API responses across changes
-- Tests use real token addresses and network IDs for integration testing
-
-## JSON-RPC API
-
-Single endpoint: `POST /` with method `get_value_by_strategy`
-
-Request format:
+Example batch request structure:
 ```json
 {
   "method": "get_value_by_strategy",
-  "params": {
-    "network": 1,
-    "snapshot": 1640998800,
-    "strategies": [
-      {
-        "name": "erc20-balance-of",
-        "network": "1",
-        "params": {
-          "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-          "decimals": 18
-        }
-      }
-    ]
-  },
+  "params": [
+    { // Proposal 1
+      "network": 1,
+      "snapshot": 1640998800,
+      "strategies": [/* multiple strategies */]
+    },
+    { // Proposal 2
+      "network": 137,
+      "snapshot": 1640998800,
+      "strategies": [/* multiple strategies */]
+    }
+  ],
   "id": 1
 }
 ```
 
-Returns array of USD unit prices corresponding to each strategy in the same order.
+### Strategy System
+
+**Strategy Registration** (`src/strategies/index.ts`):
+- Strategies are registered in a simple object mapping names to functions
+- Multiple strategy names can map to the same implementation (aliases)
+- Strategy signature: `(params: any, network: number, snapshot: number) => Promise<number>`
+
+**Strategy Types**:
+- **Core**: `erc20-balance-of` - Fetches token prices from CoinGecko
+- **Composite**: `multichain`, `uni` - Orchestrate other strategies with custom logic
+- **Aliases**: `erc20-votes`, `comp-like-votes`, etc. → all use `erc20-balance-of`
+
+**Error Handling in Strategies**:
+- Parameter errors (invalid address, missing decimals) → return `0`
+- Network/API errors → throw (caught by proposal handler)
+- Any thrown error in a strategy → entire proposal returns `[]`
+
+### Middleware Architecture
+
+1. **Validation Middleware** (`src/middleware/validation.ts`):
+   - Uses Zod for schema validation
+   - Validates JSON-RPC structure and parameters
+   - Flexible network ID handling (string or number)
+   - Max 100 proposals per request (BATCH_MAX_LIMIT)
+
+2. **Error Handler** (`src/middleware/errorHandler.ts`):
+   - Centralizes all error responses
+   - Converts validation errors to 400 with detailed field errors
+   - Converts runtime errors to 500
+   - Always returns JSON-RPC compliant error format
+
+### Key Implementation Patterns
+
+**Parallel Execution with Fail-Fast**:
+```typescript
+// In src/strategies/index.ts getValue()
+// All strategies execute in parallel, but if one fails, entire proposal returns []
+strategies.forEach(async (strategy, index) => {
+  try {
+    const value = await executeStrategy(...);
+    result[index] = value;
+  } catch {
+    if (!hasError) {
+      hasError = true;
+      resolve([]); // Fail-fast for the proposal
+    }
+  }
+});
+```
+
+**Network ID Resolution**:
+- Validation accepts both string and number formats
+- Strategies use `toInteger()` helper to normalize
+- Invalid network → strategy returns 0 (not an error)
+
+**Caching Strategy**:
+- Simple in-memory Map with no TTL or eviction
+- Used for CoinGecko API responses
+- Key format: `token-price-${network}-${address}-${timestamp}`
+
+## Environment Requirements
+
+- **COINGECKO_API_KEY**: Required Pro API key for token price data
+- **PORT**: Optional server port (defaults to 3000)
+- **COMMIT_HASH**: Optional for version endpoint
+- Node.js >=22.0.0
+
+## Testing Strategy
+
+- Jest with TypeScript via ts-jest
+- Snapshot testing for API responses
+- E2E tests use supertest to test full request/response cycle
+- Unit tests for individual strategies and helpers
+- Real token addresses and network IDs used in tests
+
+## Common Development Tasks
+
+When modifying strategies:
+1. Add/update strategy function in `src/strategies/`
+2. Register in `src/strategies/index.ts`
+3. Update tests with new scenarios
+4. Run `yarn test --updateSnapshot` if response format changes
+
+When adding new networks:
+1. Add platform ID mapping in `src/helpers/coingecko.ts:PLATFORM_IDS`
+2. Ensure CoinGecko supports the platform
 
 ## Code Patterns
 
-- **Error Handling**: Uses `rpcError()` and `rpcSuccess()` helpers for consistent JSON-RPC responses
-- **Input Validation**: All requests pass through Zod validation middleware before reaching business logic
-- **Caching**: CoinGecko responses are cached in-memory with composite keys using `withCache()` helper
-- **Strategy Registration**: Strategies are registered in `src/strategies/index.ts` with name-to-function mapping
-- **Type Safety**: Full TypeScript with flexible interfaces - strategy params accept `[key: string]: any` for extensibility
-- **Decimal Handling**: Token amounts are converted from wei to readable units using token decimals
-
-## Runtime Requirements
-
-- Node.js >=22.0.0
-- Yarn package manager
-- CoinGecko Pro API key in environment variables
-
-## Key Implementation Details
-
-- **Strategy Parameters**: `StrategyConfig.params` accepts flexible objects with any string keys to support diverse strategy implementations
-- **Network Validation**: Format validation in middleware (regex), business rules in domain layer
-- **Cache Strategy**: Simple in-memory Map with no TTL or eviction - suitable for short-lived processes
-- **Error Flow**: Validation errors return 400, business logic errors return 500 (could be improved with error classification)
+- **Error Returns**: Strategies return `0` for invalid params, throw for runtime errors
+- **Type Flexibility**: Strategy params use `[key: string]: any` for extensibility
+- **Validation Flow**: Loose validation in middleware, strict checks in domain logic
+- **Decimal Handling**: Always convert token amounts from wei using decimals parameter
