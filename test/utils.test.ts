@@ -1,10 +1,17 @@
 import { toInteger } from '../src/helpers/utils';
 
 describe('toInteger', () => {
-  it('should return number when given a number', () => {
+  it('should return number when given an integer', () => {
     expect(toInteger(42)).toBe(42);
     expect(toInteger(0)).toBe(0);
     expect(toInteger(-10)).toBe(-10);
+  });
+
+  it('should throw error when given a float', () => {
+    expect(() => toInteger(42.5)).toThrow('Invalid number: 42.5');
+    expect(() => toInteger(3.14159)).toThrow('Invalid number: 3.14159');
+    expect(() => toInteger(-10.99)).toThrow('Invalid number: -10.99');
+    expect(() => toInteger(0.1)).toThrow('Invalid number: 0.1');
   });
 
   it('should convert valid string to integer', () => {

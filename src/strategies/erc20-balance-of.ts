@@ -45,7 +45,7 @@ export default async function getValue(
 
   try {
     decimals = toInteger(params.decimals ?? DEFAULT_DECIMAL);
-    if (decimals < 0 || decimals > 255 || !Number.isInteger(decimals)) return 0;
+    if (decimals < 0 || decimals > 255) return 0;
   } catch {
     return 0;
   }
