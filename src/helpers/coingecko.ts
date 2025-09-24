@@ -240,9 +240,11 @@ function getPlatformId(network: number): string | undefined {
  * - Token address is invalid or not found
  * - No price data available for the specified timestamp
  * - API response contains no prices
- * - Missing or invalid API key
  *
- * Network errors from the fetch request are not caught and will bubble up to the caller.
+ * Will throw an error if:
+ * - CoinGecko API key is missing
+ * - API rate limit is exceeded (HTTP 429)
+ * - Network or connectivity issues occur during the fetch request
  */
 export async function getTokenPriceAtTimestamp(
   network: number,
@@ -265,6 +267,11 @@ export async function getTokenPriceAtTimestamp(
     )}`;
 
     const response = await fetch(url);
+
+    if (response.status === 429) {
+      throw new Error('CoinGecko API rate limit exceeded');
+    }
+
     const data: any = await response.json();
 
     if (!data.prices?.length) return 0;
