@@ -48,54 +48,33 @@ const strategies: Record<string, StrategyFunction> = {
 };
 
 async function getValue(param: Params): Promise<Result> {
-  const result: Result = new Array(param.strategies.length).fill(0);
-  let processed = 0;
-  let hasError = false;
-
   if (!param.strategies.length) {
     return [];
   }
 
-  // Execute all fetch in parallel
-  // but return early as soon as one fetch fails
-  return new Promise(resolve => {
-    param.strategies.forEach(async (strategy, index) => {
-      try {
+  try {
+    const results = await Promise.all(
+      param.strategies.map(async strategy => {
         let network = 1;
 
         try {
           network = toInteger(strategy.network ?? param.network);
         } catch {
-          result[index] = 0;
-          processed++;
-
-          if (processed === param.strategies.length && !hasError) {
-            resolve(result);
-          }
-          return;
+          return 0; // Invalid network returns 0
         }
 
-        const value = await (strategies[strategy.name]?.(
+        return await (strategies[strategy.name]?.(
           strategy.params,
           network,
           param.snapshot
         ) ?? 0);
+      })
+    );
 
-        result[index] = value;
-        processed++;
-
-        if (processed === param.strategies.length && !hasError) {
-          resolve(result);
-        }
-      } catch {
-        // check to avoid multiple calls to resolve
-        if (!hasError) {
-          hasError = true;
-          resolve([]);
-        }
-      }
-    });
-  });
+    return results;
+  } catch {
+    return []; // Any strategy failure returns empty array
+  }
 }
 
 export default function getStrategiesValue(
