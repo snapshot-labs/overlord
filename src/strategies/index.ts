@@ -72,7 +72,8 @@ async function getValue(param: Params): Promise<Result> {
     );
 
     return results;
-  } catch {
+  } catch (e) {
+    console.error(e);
     return []; // Any strategy failure returns empty array
   }
 }
