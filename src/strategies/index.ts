@@ -15,7 +15,7 @@ export interface NestedStrategyParams {
 
 export interface StrategyConfig {
   name: string;
-  network?: string;
+  network?: number;
   params?: StrategyParams | NestedStrategyParams | { [key: string]: any };
 }
 
@@ -48,7 +48,7 @@ export default function getStrategiesValue(
       (strategy: StrategyConfig) =>
         strategies[strategy.name]?.(
           strategy.params,
-          strategy.network ? parseInt(strategy.network) : network,
+          strategy.network ?? network,
           start
         ) ?? 0
     )
