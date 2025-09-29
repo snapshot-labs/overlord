@@ -793,11 +793,11 @@ describe('E2E API Tests', () => {
       });
     });
 
-    it('should reject root network as zero or negative', async () => {
+    it('should reject root network as zero (number)', async () => {
       const payload = {
         method: 'get_value_by_strategy',
         params: {
-          network: -1,
+          network: 0,
           snapshot: 1640998800,
           strategies: [
             {
@@ -820,6 +820,96 @@ describe('E2E API Tests', () => {
           message: 'Bad Request'
         },
         id: 5377
+      });
+    });
+
+    it('should reject root network as zero (string)', async () => {
+      const payload = {
+        method: 'get_value_by_strategy',
+        params: {
+          network: '0',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        id: 6283
+      };
+
+      const response = await request(app).post('/').send(payload).expect(400);
+      expect(response.body).toMatchObject({
+        jsonrpc: '2.0',
+        error: {
+          code: 400,
+          message: 'Bad Request'
+        },
+        id: 6283
+      });
+    });
+
+    it('should reject root network as negative (number)', async () => {
+      const payload = {
+        method: 'get_value_by_strategy',
+        params: {
+          network: -1,
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        id: 4921
+      };
+
+      const response = await request(app).post('/').send(payload).expect(400);
+      expect(response.body).toMatchObject({
+        jsonrpc: '2.0',
+        error: {
+          code: 400,
+          message: 'Bad Request'
+        },
+        id: 4921
+      });
+    });
+
+    it('should reject root network as negative (string)', async () => {
+      const payload = {
+        method: 'get_value_by_strategy',
+        params: {
+          network: '-1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        id: 8142
+      };
+
+      const response = await request(app).post('/').send(payload).expect(400);
+      expect(response.body).toMatchObject({
+        jsonrpc: '2.0',
+        error: {
+          code: 400,
+          message: 'Bad Request'
+        },
+        id: 8142
       });
     });
 
@@ -854,7 +944,7 @@ describe('E2E API Tests', () => {
       });
     });
 
-    it('should reject strategy network as negative number', async () => {
+    it('should reject strategy network as zero (number)', async () => {
       const payload = {
         method: 'get_value_by_strategy',
         params: {
@@ -863,7 +953,7 @@ describe('E2E API Tests', () => {
           strategies: [
             {
               name: 'erc20-balance-of',
-              network: -1,
+              network: 0,
               params: {
                 address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
                 decimals: 18
@@ -882,6 +972,99 @@ describe('E2E API Tests', () => {
           message: 'Bad Request'
         },
         id: 1815
+      });
+    });
+
+    it('should reject strategy network as zero (string)', async () => {
+      const payload = {
+        method: 'get_value_by_strategy',
+        params: {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: '0',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        id: 7394
+      };
+
+      const response = await request(app).post('/').send(payload).expect(400);
+      expect(response.body).toMatchObject({
+        jsonrpc: '2.0',
+        error: {
+          code: 400,
+          message: 'Bad Request'
+        },
+        id: 7394
+      });
+    });
+
+    it('should reject strategy network as negative (number)', async () => {
+      const payload = {
+        method: 'get_value_by_strategy',
+        params: {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: -1,
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        id: 3759
+      };
+
+      const response = await request(app).post('/').send(payload).expect(400);
+      expect(response.body).toMatchObject({
+        jsonrpc: '2.0',
+        error: {
+          code: 400,
+          message: 'Bad Request'
+        },
+        id: 3759
+      });
+    });
+
+    it('should reject strategy network as negative (string)', async () => {
+      const payload = {
+        method: 'get_value_by_strategy',
+        params: {
+          network: '1',
+          snapshot: 1640998800,
+          strategies: [
+            {
+              name: 'erc20-balance-of',
+              network: '-1',
+              params: {
+                address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+                decimals: 18
+              }
+            }
+          ]
+        },
+        id: 5827
+      };
+
+      const response = await request(app).post('/').send(payload).expect(400);
+      expect(response.body).toMatchObject({
+        jsonrpc: '2.0',
+        error: {
+          code: 400,
+          message: 'Bad Request'
+        },
+        id: 5827
       });
     });
 

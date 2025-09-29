@@ -10,7 +10,10 @@ const StrategyConfigSchema: z.ZodType<any> = z.lazy(() =>
       .union([
         z
           .string()
-          .regex(/^\d+$/, 'Network must be a valid positive integer string'),
+          .regex(
+            /^[1-9]\d*$/,
+            'Network must be a valid positive integer string'
+          ),
         z.number().int().positive('Network must be a positive integer')
       ])
       .transform(val => (typeof val === 'string' ? parseInt(val) : val))
@@ -47,7 +50,7 @@ const RpcParamsSchema = z.object({
     .union([
       z
         .string()
-        .regex(/^\d+$/, 'Network must be a valid positive integer string'),
+        .regex(/^[1-9]\d*$/, 'Network must be a valid positive integer string'),
       z.number().int().positive('Network must be a positive integer')
     ])
     .transform(val => (typeof val === 'string' ? parseInt(val) : val)),
