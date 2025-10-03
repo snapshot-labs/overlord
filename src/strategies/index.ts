@@ -1,4 +1,5 @@
 import erc20BalanceOf from './erc20-balance-of';
+import ethBalance from './eth-balance';
 import multichain from './multichain';
 import uni from './uni';
 
@@ -31,6 +32,7 @@ const strategies: Record<string, StrategyFunction> = {
   'erc20-balance-of-with-delegation': erc20BalanceOf,
   'erc20-votes': erc20BalanceOf,
   'erc20-votes-with-override': erc20BalanceOf,
+  'eth-balance': ethBalance,
   'comp-like-votes': erc20BalanceOf,
   uni,
   multichain,

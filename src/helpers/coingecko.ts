@@ -4,6 +4,7 @@ const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
 const TIME_WINDOW = 1800;
 const BASE_URL = 'https://pro-api.coingecko.com/api/v3';
 const CURRENCY = 'usd';
+const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 const PLATFORM_IDS = {
   '1': 'ethereum',
@@ -255,7 +256,8 @@ export async function getTokenPriceAtTimestamp(
     const platformId = getPlatformId(network);
     if (!platformId) return 0;
 
-    const url = `${BASE_URL}/coins/${platformId}/contract/${address}/market_chart/range?${new URLSearchParams(
+    const coinParam = address === ETH_ADDRESS ? '' : `contract/${address}/`;
+    const url = `${BASE_URL}/coins/${platformId}/${coinParam}market_chart/range?${new URLSearchParams(
       {
         vs_currency: CURRENCY,
         from: (ts - TIME_WINDOW).toString(),
@@ -275,4 +277,8 @@ export async function getTokenPriceAtTimestamp(
 
     return price;
   });
+}
+
+export async function getEthPriceAtTimestamp(ts: number) {
+  return getTokenPriceAtTimestamp(1, ETH_ADDRESS, ts);
 }

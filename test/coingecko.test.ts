@@ -1,4 +1,7 @@
-import { getTokenPriceAtTimestamp } from '../src/helpers/coingecko';
+import {
+  getEthPriceAtTimestamp,
+  getTokenPriceAtTimestamp
+} from '../src/helpers/coingecko';
 
 describe('getTokenPriceAtTimestamp', () => {
   it('should execute getTokenPriceAtTimestamp with specific parameters', async () => {
@@ -35,6 +38,19 @@ describe('getTokenPriceAtTimestamp', () => {
       '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
       futureTimestamp
     );
+    expect(result).toBe(0);
+  });
+});
+
+describe('getEthPriceAtTimestamp', () => {
+  it('should execute getEthPriceAtTimestamp with specific parameters', async () => {
+    const result = await getEthPriceAtTimestamp(1640998800);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('should return 0 when timestamp is way in the future', async () => {
+    const futureTimestamp = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60; // 1 year from now
+    const result = await getEthPriceAtTimestamp(futureTimestamp);
     expect(result).toBe(0);
   });
 });

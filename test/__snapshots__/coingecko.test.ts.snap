@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`getEthPriceAtTimestamp should execute getEthPriceAtTimestamp with specific parameters 1`] = `3733.329974102929`;
+
 exports[`getTokenPriceAtTimestamp should execute getTokenPriceAtTimestamp with specific parameters 1`] = `17.25638653634901`;
