@@ -1,7 +1,7 @@
 import getValue from '../../src/strategies/eth-balance';
 
 jest.mock('../../src/helpers/coingecko', () => ({
-  getEthPriceAtTimestamp: jest.fn().mockResolvedValue(1000)
+  getTokenPriceAtTimestamp: jest.fn().mockResolvedValue(1000)
 }));
 
 describe('eth-balance strategy', () => {

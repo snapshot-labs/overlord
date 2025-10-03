@@ -1,7 +1,4 @@
-import {
-  getEthPriceAtTimestamp,
-  getTokenPriceAtTimestamp
-} from '../src/helpers/coingecko';
+import { getTokenPriceAtTimestamp } from '../src/helpers/coingecko';
 
 describe('getTokenPriceAtTimestamp', () => {
   it('should execute getTokenPriceAtTimestamp with specific parameters', async () => {
@@ -42,15 +39,25 @@ describe('getTokenPriceAtTimestamp', () => {
   });
 });
 
-describe('getEthPriceAtTimestamp', () => {
-  it('should execute getEthPriceAtTimestamp with specific parameters', async () => {
-    const result = await getEthPriceAtTimestamp(1640998800);
+describe('getTokenPriceAtTimestamp with native tokens', () => {
+  it('should execute getTokenPriceAtTimestamp with ETH (null address)', async () => {
+    const result = await getTokenPriceAtTimestamp(1, null, 1640998800);
     expect(result).toMatchSnapshot();
   });
 
-  it('should return 0 when timestamp is way in the future', async () => {
+  it('should execute getTokenPriceAtTimestamp with XDAI (null address)', async () => {
+    const result = await getTokenPriceAtTimestamp(100, null, 1640998800);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('should execute getTokenPriceAtTimestamp with BNB (null address)', async () => {
+    const result = await getTokenPriceAtTimestamp(56, null, 1640998800);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('should return 0 when timestamp is way in the future for native token', async () => {
     const futureTimestamp = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60; // 1 year from now
-    const result = await getEthPriceAtTimestamp(futureTimestamp);
+    const result = await getTokenPriceAtTimestamp(1, null, futureTimestamp);
     expect(result).toBe(0);
   });
 });
