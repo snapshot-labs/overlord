@@ -1,5 +1,6 @@
 import erc20BalanceOf from './erc20-balance-of';
 import multichain from './multichain';
+import pagination from './pagination';
 import uni from './uni';
 
 export interface StrategyParams {
@@ -34,6 +35,7 @@ const strategies: Record<string, StrategyFunction> = {
   'comp-like-votes': erc20BalanceOf,
   uni,
   multichain,
+  pagination,
   delegation: multichain,
   'with-delegation': multichain
 };
