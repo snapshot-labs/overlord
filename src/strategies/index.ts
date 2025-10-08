@@ -37,7 +37,6 @@ const strategies: Record<string, StrategyFunction> = {
   multichain,
   delegation: multichain,
   'safe-vested': safeVested,
-
   'with-delegation': multichain
 };
 
