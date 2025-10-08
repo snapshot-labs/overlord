@@ -13,7 +13,21 @@ const MAPPED_EQUIVALENT_TOKENS: { [address: string]: string } = {
     '1:0xc0c293ce456ff0ed870add98a0828dd4d2903dbf',
   // Base
   '0x9e1f4190f1a8fe0cd57421533decb57f9980922e':
-    '1:0xc0c293ce456ff0ed870add98a0828dd4d2903dbf'
+    '1:0xc0c293ce456ff0ed870add98a0828dd4d2903dbf',
+  // Parallel sPRL1 -> PRL
+  // https://docs.parallel.best/governance/sprl
+  // ETH mainnet
+  '0xead729472f82e5ec2ff4e691d67633077c1b5901':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Polygon
+  '0xdb7be3a50bdf5641757ebea38e8014e1f0aa9475':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Base
+  '0x01fa35fde0e813e2d6687660a74a313d8d922e48':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Sonic
+  '0x7df74bbb6f82ec1bcb1562a30ef5bf5c326e2811':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3'
 };
 
 /**
