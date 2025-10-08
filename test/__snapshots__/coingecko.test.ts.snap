@@ -1,3 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getTokenPriceAtTimestamp should execute getTokenPriceAtTimestamp with specific parameters 1`] = `17.08372160611956`;
+
+exports[`getTokenPriceAtTimestamp with native tokens should execute getTokenPriceAtTimestamp with BNB (null address) 1`] = `513.9136993856813`;
+
+exports[`getTokenPriceAtTimestamp with native tokens should execute getTokenPriceAtTimestamp with ETH (null address) 1`] = `3693.840398680401`;
+
+exports[`getTokenPriceAtTimestamp with native tokens should execute getTokenPriceAtTimestamp with XDAI (null address) 1`] = `0.9996772279139438`;
