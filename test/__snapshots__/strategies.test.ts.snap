@@ -25,6 +25,12 @@ exports[`Strategies should execute multiple strategies 1`] = `
 ]
 `;
 
+exports[`Strategies should execute pagination strategy with specific parameters 1`] = `
+[
+  17.08372160611956,
+]
+`;
+
 exports[`Strategies should handle 0 decimals parameter correctly 1`] = `
 [
   0.000001000753990629655,
