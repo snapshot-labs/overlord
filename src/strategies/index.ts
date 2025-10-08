@@ -1,5 +1,6 @@
 import erc20BalanceOf from './erc20-balance-of';
 import multichain from './multichain';
+import safeVested from './safe-vested';
 import uni from './uni';
 
 export interface StrategyParams {
@@ -35,6 +36,8 @@ const strategies: Record<string, StrategyFunction> = {
   uni,
   multichain,
   delegation: multichain,
+  'safe-vested': safeVested,
+
   'with-delegation': multichain
 };
 
