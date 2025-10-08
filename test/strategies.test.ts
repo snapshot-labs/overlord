@@ -29,6 +29,25 @@ describe('Strategies', () => {
     expect(result).toMatchSnapshot();
   });
 
+  it('should execute pagination strategy with specific parameters', async () => {
+    const result = await getStrategiesValue(1, 1640998800, [
+      {
+        name: 'pagination',
+        network: 1,
+        params: {
+          strategy: {
+            name: 'erc20-balance-of',
+            params: {
+              address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+              decimals: 18
+            }
+          }
+        }
+      }
+    ]);
+    expect(result).toMatchSnapshot();
+  });
+
   it('should convert price when param decimals differ from token decimals', async () => {
     const result = await getStrategiesValue(8453, 1640998800, [
       {

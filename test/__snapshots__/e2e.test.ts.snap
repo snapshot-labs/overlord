@@ -2,13 +2,13 @@
 
 exports[`E2E API Tests Strategy execution validation should execute multiple strategies with different decimals 1`] = `
 [
-  1.0032581274541421,
-  0.10032581274541422,
+  1.000753990629655,
+  0.1000753990629655,
 ]
 `;
 
 exports[`E2E API Tests Strategy execution validation should execute single erc20-balance-of strategy 1`] = `
 [
-  17.25638653634901,
+  17.08372160611956,
 ]
 `;
