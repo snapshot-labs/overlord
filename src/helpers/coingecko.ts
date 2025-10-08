@@ -1,7 +1,7 @@
 import { withCache } from './cache';
 
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
-const TIME_WINDOW = 1800;
+const TIME_WINDOW = 2 * 3600;
 const BASE_URL = 'https://pro-api.coingecko.com/api/v3';
 const CURRENCY = 'usd';
 
