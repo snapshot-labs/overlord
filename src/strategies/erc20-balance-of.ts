@@ -27,7 +27,15 @@ const MAPPED_EQUIVALENT_TOKENS: { [address: string]: string } = {
     '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
   // Sonic
   '0x7df74bbb6f82ec1bcb1562a30ef5bf5c326e2811':
-    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3'
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Vote locked CVX (vlCVX) -> CVX
+  // https://docs.convexfinance.com/convexfinance/products/vote-locking
+  // ETH mainnet
+  '0x72a19342e8f1838460ebfccef09f6585e32db86e':
+    '1:0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
+  // ETH mainnet (old)
+  '0xd18140b4b819b895a3dba5442f959fa44994af50':
+    '1:0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'
 };
 
 /**
@@ -67,7 +75,10 @@ export default async function getValue(
     params.address.toLowerCase()
   ]?.split(':') ?? [network, params.address];
 
-  const tokenDecimals = await getTokenDecimals(network, params.address);
+  const tokenDecimals = await getTokenDecimals(
+    Number(tokenNetwork),
+    tokenAddress
+  );
   const price = await getTokenPriceAtTimestamp(
     Number(tokenNetwork),
     tokenAddress,
