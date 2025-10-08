@@ -1,3 +1,4 @@
+import contractCall from './contract-call';
 import erc20BalanceOf from './erc20-balance-of';
 import multichain from './multichain';
 import safeVested from './safe-vested';
@@ -37,7 +38,8 @@ const strategies: Record<string, StrategyFunction> = {
   multichain,
   delegation: multichain,
   'safe-vested': safeVested,
-  'with-delegation': multichain
+  'with-delegation': multichain,
+  'contract-call': contractCall
 };
 
 export default function getStrategiesValue(
