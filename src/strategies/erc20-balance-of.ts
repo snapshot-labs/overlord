@@ -4,6 +4,18 @@ import { getTokenDecimals } from '../helpers/token';
 
 const DEFAULT_DECIMAL = 18;
 
+// Mapping of equivalent tokens (vested, locked, wrapped, etc ...) with 1:1 ratio
+const MAPPED_EQUIVALENT_TOKENS: { [address: string]: string } = {
+  // Vote locked Aura (vlAura) -> Aura
+  // https://docs.aura.finance/aura/usdaura/vote-locking
+  // ETH mainnet
+  '0x3fa73f1e5d8a792c80f426fc8f84fbf7ce9bbcac':
+    '1:0xc0c293ce456ff0ed870add98a0828dd4d2903dbf',
+  // Base
+  '0x9e1f4190f1a8fe0cd57421533decb57f9980922e':
+    '1:0xc0c293ce456ff0ed870add98a0828dd4d2903dbf'
+};
+
 /**
  * ERC20 balance-of strategy that calculates the unit price of a token in USD.
  *
@@ -37,11 +49,14 @@ export default async function getValue(
   }
 
   const decimals = params.decimals ?? DEFAULT_DECIMAL;
+  const [tokenNetwork, tokenAddress] = MAPPED_EQUIVALENT_TOKENS[
+    params.address.toLowerCase()
+  ]?.split(':') ?? [network, params.address];
 
   const tokenDecimals = await getTokenDecimals(network, params.address);
   const price = await getTokenPriceAtTimestamp(
-    network,
-    params.address,
+    Number(tokenNetwork),
+    tokenAddress,
     snapshot
   );
 
