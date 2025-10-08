@@ -24,5 +24,23 @@ export default async function getValue(
     );
   }
 
+  // SSV Network Vesting contract
+  // https://forum.ssv.network/t/ssv-dao-partners-ssv-vesting/127
+  if (
+    params.address.toLowerCase() ===
+      '0xb8471180c79a0a69c7790a1ccf62e91b3c3559bf' &&
+    params.methodABI?.name === 'totalVestingBalanceOf' &&
+    network === 1
+  ) {
+    return erc20BalanceOf(
+      {
+        ...params,
+        address: '0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54'
+      },
+      1,
+      snapshot
+    );
+  }
+
   return 0;
 }
