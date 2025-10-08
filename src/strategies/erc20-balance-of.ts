@@ -73,7 +73,7 @@ export default async function getValue(
   const decimals = params.decimals ?? DEFAULT_DECIMAL;
   const [tokenNetwork, tokenAddress] = MAPPED_EQUIVALENT_TOKENS[
     params.address.toLowerCase()
-  ]?.split(':') ?? [network, params.address];
+  ]?.split(':') ?? [String(network), params.address];
 
   const tokenDecimals = await getTokenDecimals(
     Number(tokenNetwork),
