@@ -2,6 +2,7 @@ import contractCall from './contract-call';
 import erc20BalanceOf from './erc20-balance-of';
 import erc20BalanceOfWeighted from './erc20-balance-of-weighted';
 import multichain from './multichain';
+import pagination from './pagination';
 import safeVested from './safe-vested';
 import uni from './uni';
 
@@ -39,6 +40,7 @@ const strategies: Record<string, StrategyFunction> = {
   'comp-like-votes': erc20BalanceOf,
   uni,
   multichain,
+  pagination,
   delegation: multichain,
   'safe-vested': safeVested,
   'with-delegation': multichain,
