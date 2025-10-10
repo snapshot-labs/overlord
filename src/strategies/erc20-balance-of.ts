@@ -4,6 +4,44 @@ import { getTokenDecimals } from '../helpers/token';
 
 const DEFAULT_DECIMAL = 18;
 
+// Mapping of equivalent tokens (vested, locked, wrapped, etc ...) with 1:1 ratio
+const MAPPED_EQUIVALENT_TOKENS: { [address: string]: string } = {
+  // Vote locked Aura (vlAura) -> Aura
+  // https://docs.aura.finance/aura/usdaura/vote-locking
+  // ETH mainnet
+  '0x3fa73f1e5d8a792c80f426fc8f84fbf7ce9bbcac':
+    '1:0xc0c293ce456ff0ed870add98a0828dd4d2903dbf',
+  // Base
+  '0x9e1f4190f1a8fe0cd57421533decb57f9980922e':
+    '1:0xc0c293ce456ff0ed870add98a0828dd4d2903dbf',
+  // Parallel sPRL1 -> PRL
+  // https://docs.parallel.best/governance/sprl
+  // ETH mainnet
+  '0xead729472f82e5ec2ff4e691d67633077c1b5901':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Polygon
+  '0xdb7be3a50bdf5641757ebea38e8014e1f0aa9475':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Base
+  '0x01fa35fde0e813e2d6687660a74a313d8d922e48':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Sonic
+  '0x7df74bbb6f82ec1bcb1562a30ef5bf5c326e2811':
+    '1:0x6c0aeceedc55c9d55d8b99216a670d85330941c3',
+  // Vote locked CVX (vlCVX) -> CVX
+  // https://docs.convexfinance.com/convexfinance/products/vote-locking
+  // ETH mainnet
+  '0x72a19342e8f1838460ebfccef09f6585e32db86e':
+    '1:0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
+  // ETH mainnet (old)
+  '0xd18140b4b819b895a3dba5442f959fa44994af50':
+    '1:0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
+  // Shapeshift staked FOX -> FOX
+  // Arbitrum
+  '0xac2a4fd70bcd8bab0662960455c363735f0e2b56':
+    '1:0xc770eefad204b5180df6a14ee197d99d808ee52d'
+};
+
 /**
  * ERC20 balance-of strategy that calculates the unit price of a token in USD.
  *
@@ -37,11 +75,17 @@ export default async function getValue(
   }
 
   const decimals = params.decimals ?? DEFAULT_DECIMAL;
+  const [tokenNetwork, tokenAddress] = MAPPED_EQUIVALENT_TOKENS[
+    params.address.toLowerCase()
+  ]?.split(':') ?? [String(network), params.address];
 
-  const tokenDecimals = await getTokenDecimals(network, params.address);
+  const tokenDecimals = await getTokenDecimals(
+    Number(tokenNetwork),
+    tokenAddress
+  );
   const price = await getTokenPriceAtTimestamp(
-    network,
-    params.address,
+    Number(tokenNetwork),
+    tokenAddress,
     snapshot
   );
 
