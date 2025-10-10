@@ -35,7 +35,11 @@ const MAPPED_EQUIVALENT_TOKENS: { [address: string]: string } = {
     '1:0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
   // ETH mainnet (old)
   '0xd18140b4b819b895a3dba5442f959fa44994af50':
-    '1:0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'
+    '1:0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
+  // Shapeshift staked FOX -> FOX
+  // Arbitrum
+  '0xac2a4fd70bcd8bab0662960455c363735f0e2b56':
+    '1:0xc770eefad204b5180df6a14ee197d99d808ee52d'
 };
 
 /**
