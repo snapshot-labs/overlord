@@ -79,14 +79,19 @@ export default async function getValue(
     params.address.toLowerCase()
   ]?.split(':') ?? [String(network), params.address];
 
-  const tokenDecimals = await getTokenDecimals(
-    Number(tokenNetwork),
-    tokenAddress
-  );
   const price = await getTokenPriceAtTimestamp(
     Number(tokenNetwork),
     tokenAddress,
     snapshot
+  );
+
+  if (price === 0) {
+    return 0;
+  }
+
+  const tokenDecimals = await getTokenDecimals(
+    Number(tokenNetwork),
+    tokenAddress
   );
 
   return price / Math.pow(10, tokenDecimals - decimals);

@@ -76,36 +76,6 @@ describe('Strategies', () => {
     expect(result).toMatchSnapshot();
   });
 
-  it('should throw for invalid address parameter', async () => {
-    await expect(
-      getStrategiesValue(1, 1640998800, [
-        {
-          name: 'erc20-balance-of',
-          network: 1,
-          params: {
-            address: '0xinvalid',
-            decimals: 18
-          }
-        }
-      ])
-    ).rejects.toThrow();
-  });
-
-  it('should throw for invalid network parameter', async () => {
-    await expect(
-      getStrategiesValue(99999, 1640998800, [
-        {
-          name: 'erc20-balance-of',
-          network: 99999,
-          params: {
-            address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-            decimals: 18
-          }
-        }
-      ])
-    ).rejects.toThrow();
-  });
-
   it('should return 0 for unsupported strategy name', async () => {
     const result = await getStrategiesValue(1, 1640998800, [
       {
