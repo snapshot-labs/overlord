@@ -74,6 +74,11 @@ export default async function getValue(
     throw new Error('Address is required for erc20-balance-of strategy');
   }
 
+  const decimals = params.decimals ?? DEFAULT_DECIMAL;
+  const [tokenNetwork, tokenAddress] = MAPPED_EQUIVALENT_TOKENS[
+    params.address.toLowerCase()
+  ]?.split(':') ?? [String(network), params.address];
+
   const price = await getTokenPriceAtTimestamp(
     Number(tokenNetwork),
     tokenAddress,
@@ -84,15 +89,10 @@ export default async function getValue(
     return 0;
   }
 
-  const decimals = params.decimals ?? DEFAULT_DECIMAL;
-  const [tokenNetwork, tokenAddress] = MAPPED_EQUIVALENT_TOKENS[
-    params.address.toLowerCase()
-  ]?.split(':') ?? [String(network), params.address];
-
   const tokenDecimals = await getTokenDecimals(
     Number(tokenNetwork),
     tokenAddress
   );
-  
+
   return price / Math.pow(10, tokenDecimals - decimals);
 }
