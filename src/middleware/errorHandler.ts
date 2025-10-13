@@ -3,6 +3,7 @@ import { ZodError } from 'zod';
 
 const HTTP_STATUS_MESSAGES: Record<number, string> = {
   400: 'Bad Request',
+  429: 'Too Many Requests',
   500: 'Internal Server Error'
 };
 
@@ -18,9 +19,11 @@ export function errorHandler(
   let code = 500;
   if (err instanceof ZodError) {
     code = 400;
+  } else if (err.status && typeof err.status === 'number') {
+    code = err.status;
   }
 
-  const message = HTTP_STATUS_MESSAGES[code] || 'unauthorized';
+  const message = HTTP_STATUS_MESSAGES[code] || 'Internal Server Error';
   let errorData = err;
 
   if (err instanceof ZodError) {

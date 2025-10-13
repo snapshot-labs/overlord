@@ -1,5 +1,4 @@
 import { withCache } from './cache';
-import { rateLimitedFetch } from './utils';
 
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
 const TIME_WINDOW = 2 * 3600;
@@ -272,7 +271,6 @@ const NETWORK_MAPPING: Record<
  * - Missing or invalid API key
  *
  * Network errors from the fetch request are not caught and will bubble up to the caller.
- * Rate limiting enforces max 500 requests per minute using sliding window.
  */
 export async function getTokenPriceAtTimestamp(
   network: number,
@@ -296,7 +294,15 @@ export async function getTokenPriceAtTimestamp(
       }
     )}`;
 
-    const response = await rateLimitedFetch(url);
+    const response = await fetch(url);
+
+    // Check for rate limit error
+    if (response.status === 429) {
+      const error = new Error('Rate limit exceeded') as any;
+      error.status = 429;
+      throw error;
+    }
+
     const data: any = await response.json();
 
     if (!data.prices?.length) return 0;
