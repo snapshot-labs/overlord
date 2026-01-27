@@ -25,12 +25,20 @@ export default async function getValue(
   }
 
   // AAVE effective balance from Liquidity Pool
-  if (
+  const aaveFromLP =
     params.address.toLowerCase() ===
       '0xC0259c59D9f980E3b5e2574cD78C9A9Bc6A8E3fc' &&
     params.methodABI?.name === 'balanceOf' &&
-    params.network === 1
-  ) {
+    params.network === 1;
+
+  // AAVE base/staked/lended token
+  const aaveToken =
+    params.address.toLowerCase() ===
+      '0xa198Fac58E02A5C5F8F7e877895d50cFa9ad1E04' &&
+    params.methodABI?.name === 'getFullVotingPower' &&
+    params.network === 1;
+
+  if (aaveFromLP || aaveToken) {
     return erc20BalanceOf(
       {
         ...params,
