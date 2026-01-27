@@ -24,5 +24,22 @@ export default async function getValue(
     );
   }
 
+  // AAVE effective balance from Liquidity Pool
+  if (
+    params.address.toLowerCase() ===
+      '0xC0259c59D9f980E3b5e2574cD78C9A9Bc6A8E3fc' &&
+    params.methodABI?.name === 'balanceOf' &&
+    params.network === 1
+  ) {
+    return erc20BalanceOf(
+      {
+        ...params,
+        address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9'
+      },
+      1,
+      snapshot
+    );
+  }
+
   return 0;
 }
