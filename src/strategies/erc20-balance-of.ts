@@ -71,7 +71,11 @@ export default async function getValue(
   snapshot: number
 ): Promise<number> {
   if (!params.address) {
-    throw new Error('Address is required for erc20-balance-of strategy');
+    const error: any = new Error(
+      'Address is required for erc20-balance-of strategy'
+    );
+    error.status = 400;
+    throw error;
   }
 
   const decimals = params.decimals ?? DEFAULT_DECIMAL;
