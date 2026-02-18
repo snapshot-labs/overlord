@@ -253,6 +253,36 @@ describe('E2E API Tests', () => {
     });
   });
 
+  it('should return 400 when address is missing for erc20-balance-of strategy', async () => {
+    const payload = {
+      method: 'get_value_by_strategy',
+      params: {
+        network: '1',
+        snapshot: 1640998800,
+        strategies: [
+          {
+            name: 'erc20-balance-of',
+            params: {
+              decimals: 18
+            }
+          }
+        ]
+      },
+      id: 4470
+    };
+
+    const response = await request(app).post('/').send(payload).expect(400);
+
+    expect(response.body).toMatchObject({
+      jsonrpc: '2.0',
+      error: {
+        code: 400,
+        message: 'Bad Request'
+      },
+      id: 4470
+    });
+  });
+
   describe('Snapshot parameter validation', () => {
     it('should return error when snapshot is missing', async () => {
       const payload = {
