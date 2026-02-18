@@ -298,7 +298,7 @@ export async function getTokenPriceAtTimestamp(
 
     // Check for rate limit error
     if (response.status === 429) {
-      const error = new Error('Rate limit exceeded') as any;
+      const error: any = new Error('Rate limit exceeded');
       error.status = 429;
       throw error;
     }
