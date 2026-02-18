@@ -295,6 +295,14 @@ export async function getTokenPriceAtTimestamp(
     )}`;
 
     const response = await fetch(url);
+
+    // Check for rate limit error
+    if (response.status === 429) {
+      const error: any = new Error('Rate limit exceeded');
+      error.status = 429;
+      throw error;
+    }
+
     const data: any = await response.json();
 
     if (!data.prices?.length) return 0;
