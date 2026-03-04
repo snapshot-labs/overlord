@@ -9,5 +9,5 @@ export default async function getValue(
   const value =
     (await erc20BalanceOf(params, network, snapshot)) /
     (params.weight ?? params.coeff);
-  return Number.isNaN(value) ? 0 : value;
+  return Number.isFinite(value) ? value : 0;
 }
