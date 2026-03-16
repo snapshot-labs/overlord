@@ -6,8 +6,8 @@ export default async function getValue(
   network: number,
   snapshot: number
 ): Promise<number> {
-  return (
+  const value =
     (await erc20BalanceOf(params, network, snapshot)) /
-    (params.weight ?? params.coeff)
-  );
+    (params.weight ?? params.coeff);
+  return Number.isFinite(value) ? value : 0;
 }
