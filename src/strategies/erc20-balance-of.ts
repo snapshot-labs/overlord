@@ -93,10 +93,17 @@ export default async function getValue(
     return 0;
   }
 
-  const tokenDecimals = await getTokenDecimals(
-    Number(tokenNetwork),
-    tokenAddress
-  );
+  let tokenDecimals: number;
+  try {
+    tokenDecimals = await getTokenDecimals(Number(tokenNetwork), tokenAddress);
+  } catch (e: any) {
+    // CALL_EXCEPTION means the contract doesn't implement decimals()
+    // Other errors (timeout, network) are temporary and should be retried
+    if (e.code === 'CALL_EXCEPTION') {
+      return 0;
+    }
+    throw e;
+  }
 
   return price / Math.pow(10, tokenDecimals - decimals);
 }
