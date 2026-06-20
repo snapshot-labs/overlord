@@ -42,6 +42,7 @@ const strategies: Record<string, StrategyFunction> = {
   'erc20-votes-with-override': erc20BalanceOf,
   'eth-balance': ethBalance,
   'comp-like-votes': erc20BalanceOf,
+  'balance-of-with-min': erc20BalanceOf,
   uni,
   multichain,
   pagination,
