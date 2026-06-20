@@ -46,6 +46,7 @@ const strategies: Record<string, StrategyFunction> = {
   multichain,
   pagination,
   delegation: multichain,
+  'delegation-with-cap': multichain,
   'safe-vested': safeVested,
   'with-delegation': multichain,
   'contract-call': contractCall
